@@ -32,7 +32,6 @@ const platformLabels: Record<AIPlatform, string> = {
   replit: 'Replit',
   chatgpt: 'ChatGPT',
   claude: 'Claude',
-  gemini: 'Gemini',
   copilot: 'GitHub Copilot',
   other: 'Outra IA',
 };
@@ -231,7 +230,6 @@ const generators: Record<AIPlatform, (config: PromptConfig) => string> = {
   replit: generateReplitPrompt,
   chatgpt: generateChatGPTPrompt,
   claude: generateClaudePrompt,
-  gemini: generateGeminiPrompt,
   copilot: generateCopilotPrompt,
   other: generateGenericPrompt,
 };
@@ -588,53 +586,6 @@ Use blocos de código com syntax highlighting e comentários explicativos.
 *Claude Prompt*`;
 }
 
-function generateGeminiPrompt(config: PromptConfig): string {
-  const { projectType, objective, contextAnswers, targetAudience, complexity, visualStyle, referenceImages } = config;
-  const features = getProjectFeatures(projectType, complexity);
-  const contextDetails = formatContextDetails(contextAnswers);
-  const visualInstructions = getVisualInstructions(visualStyle);
-
-  return `# Solicitação de Desenvolvimento
-
-## Papel
-Você é um desenvolvedor full-stack experiente especializado em aplicações web modernas.
-
-## Projeto
-**Tipo:** ${projectTypeLabels[projectType]}
-**Objetivo:** ${objective}
-**Usuários:** ${targetAudience}
-**Complexidade:** ${complexityLabels[complexity]}
-
-${contextDetails ? `## Detalhes do Projeto\n${contextDetails}` : ''}
-
-${referenceImages.length > 0 ? `## Referências de Design\nAnalise as ${referenceImages.length} imagem(ns) anexada(s) e use como base para:\n- Esquema de cores\n- Layout geral\n- Estilo dos componentes\n- Hierarquia visual\n` : ''}
-
-## Funcionalidades
-${features.map((f, i) => `${i + 1}. ${f}`).join('\n')}
-
-## Estilo Visual: ${visualStyleLabels[visualStyle]}
-${visualInstructions}
-
-## Tecnologias
-- React + TypeScript
-- Tailwind CSS
-- Componentes reutilizáveis
-- Design responsivo
-
-## Entregáveis
-1. Código dos componentes principais
-2. Estrutura de tipos TypeScript
-3. Estilos com Tailwind
-4. Instruções de uso
-
-## Qualidade
-- Código comentado
-- Boas práticas React
-- Acessível e performático
-
----
-*Gemini Prompt*`;
-}
 
 function generateCopilotPrompt(config: PromptConfig): string {
   const { projectType, objective, complexity, visualStyle, referenceImages } = config;
