@@ -9,6 +9,7 @@ interface OptionCardProps {
   selected?: boolean;
   onClick: () => void;
   delay?: number;
+  image?: string;
 }
 
 export const OptionCard = ({
@@ -18,6 +19,7 @@ export const OptionCard = ({
   selected,
   onClick,
   delay = 0,
+  image,
 }: OptionCardProps) => {
   return (
     <motion.button
@@ -28,45 +30,57 @@ export const OptionCard = ({
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={cn(
-        "w-full p-6 rounded-2xl text-left transition-all duration-300 gradient-border",
+        "w-full rounded-2xl text-left transition-all duration-300 gradient-border overflow-hidden",
         selected
           ? "bg-secondary/80 glow-soft"
           : "bg-card hover:bg-secondary/50"
       )}
     >
-      <div className="flex items-start gap-4">
-        <div
-          className={cn(
-            "p-3 rounded-xl transition-all duration-300",
-            selected ? "gradient-primary" : "bg-secondary"
-          )}
-        >
-          <Icon
-            className={cn(
-              "w-6 h-6 transition-colors",
-              selected ? "text-primary-foreground" : "text-muted-foreground"
-            )}
+      {image && (
+        <div className="relative h-28 overflow-hidden">
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
         </div>
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold mb-1">{title}</h3>
-          <p className="text-muted-foreground text-sm">{description}</p>
-        </div>
-        <div
-          className={cn(
-            "w-5 h-5 rounded-full border-2 transition-all duration-300 flex items-center justify-center",
-            selected
-              ? "border-primary bg-primary"
-              : "border-muted-foreground"
-          )}
-        >
-          {selected && (
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="w-2 h-2 bg-primary-foreground rounded-full"
+      )}
+      <div className={cn("p-4", image ? "pt-3" : "p-6")}>
+        <div className="flex items-start gap-4">
+          <div
+            className={cn(
+              "p-3 rounded-xl transition-all duration-300 shrink-0",
+              selected ? "gradient-primary" : "bg-secondary"
+            )}
+          >
+            <Icon
+              className={cn(
+                "w-5 h-5 transition-colors",
+                selected ? "text-primary-foreground" : "text-muted-foreground"
+              )}
             />
-          )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base font-semibold mb-1">{title}</h3>
+            <p className="text-muted-foreground text-sm line-clamp-2">{description}</p>
+          </div>
+          <div
+            className={cn(
+              "w-5 h-5 rounded-full border-2 transition-all duration-300 flex items-center justify-center shrink-0",
+              selected
+                ? "border-primary bg-primary"
+                : "border-muted-foreground"
+            )}
+          >
+            {selected && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="w-2 h-2 bg-primary-foreground rounded-full"
+              />
+            )}
+          </div>
         </div>
       </div>
     </motion.button>
