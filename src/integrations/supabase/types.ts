@@ -38,6 +38,54 @@ export type Database = {
         }
         Relationships: []
       }
+      prompts: {
+        Row: {
+          ai_platform: string | null
+          audience: string | null
+          complexity: string | null
+          context_answers: Json | null
+          created_at: string
+          generated_prompt: string | null
+          id: string
+          objective: string | null
+          project_type: string | null
+          title: string
+          updated_at: string
+          user_id: string
+          visual_style: string | null
+        }
+        Insert: {
+          ai_platform?: string | null
+          audience?: string | null
+          complexity?: string | null
+          context_answers?: Json | null
+          created_at?: string
+          generated_prompt?: string | null
+          id?: string
+          objective?: string | null
+          project_type?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+          visual_style?: string | null
+        }
+        Update: {
+          ai_platform?: string | null
+          audience?: string | null
+          complexity?: string | null
+          context_answers?: Json | null
+          created_at?: string
+          generated_prompt?: string | null
+          id?: string
+          objective?: string | null
+          project_type?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          visual_style?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
