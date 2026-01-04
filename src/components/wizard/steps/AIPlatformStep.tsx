@@ -79,13 +79,6 @@ const platforms: PlatformOption[] = [
   },
   {
     id: 'other',
-    name: 'GitHub Copilot',
-    description: 'Autocompletar código no editor',
-    icon: Cpu,
-    color: 'from-gray-500 to-gray-700',
-  },
-  {
-    id: 'other',
     name: 'Outra IA',
     description: 'Windsurf, Codeium, Amazon Q, etc.',
     icon: Bot,
