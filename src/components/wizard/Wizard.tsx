@@ -5,10 +5,11 @@ import { ObjectiveStep } from './steps/ObjectiveStep';
 import { ContextQuestionsStep } from './steps/ContextQuestionsStep';
 import { AudienceStep } from './steps/AudienceStep';
 import { ComplexityStep } from './steps/ComplexityStep';
+import { ReferenceImagesStep } from './steps/ReferenceImagesStep';
 import { VisualStyleStep } from './steps/VisualStyleStep';
 import { ResultStep } from './steps/ResultStep';
 
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 8;
 
 const steps = [
   ProjectTypeStep,
@@ -16,6 +17,7 @@ const steps = [
   ContextQuestionsStep,
   AudienceStep,
   ComplexityStep,
+  ReferenceImagesStep,
   VisualStyleStep,
   ResultStep,
 ];

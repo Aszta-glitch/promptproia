@@ -127,7 +127,8 @@ export const generatePrompt = (
   contextAnswers: Record<string, string>,
   targetAudience: string,
   complexity: ComplexityLevel,
-  visualStyle: VisualStyle
+  visualStyle: VisualStyle,
+  referenceImages: string[] = []
 ): string => {
   const features = getProjectFeatures(projectType, complexity);
   const visualInstructions = getVisualInstructions(visualStyle);
@@ -157,6 +158,23 @@ export const generatePrompt = (
     })
     .join('\n');
 
+  const referenceSection = referenceImages.length > 0 
+    ? `
+---
+
+## 🖼️ REFERÊNCIAS VISUAIS
+
+**IMPORTANTE:** ${referenceImages.length} imagem(ns) de referência foram anexadas a este prompt.
+Use estas imagens como inspiração visual para:
+- Paleta de cores
+- Layout e composição
+- Estilo de componentes
+- Tipografia e espaçamentos
+- Tom geral do design
+
+Analise cada imagem de referência e extraia os elementos visuais mais relevantes para incorporar no projeto.
+` : '';
+
   const prompt = `# Prompt Otimizado para Lovable
 
 ## 🎯 CONTEXTO (C.L.E.A.R. Framework)
@@ -169,7 +187,7 @@ export const generatePrompt = (
 
 ${contextDetails ? `### Detalhes Específicos:
 ${contextDetails}` : ''}
-
+${referenceSection}
 ---
 
 ## 📋 LAYOUT & ESTRUTURA

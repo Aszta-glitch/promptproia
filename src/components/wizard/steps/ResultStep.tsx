@@ -3,11 +3,11 @@ import { motion } from 'framer-motion';
 import { WizardStep } from '../WizardStep';
 import { useWizardStore } from '@/store/wizardStore';
 import { Button } from '@/components/ui/button';
-import { Copy, Download, Check, Lock, RotateCcw } from 'lucide-react';
+import { Copy, Download, Check, Lock, RotateCcw, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const ResultStep = () => {
-  const { generatedPrompt, reset } = useWizardStore();
+  const { generatedPrompt, referenceImages, reset } = useWizardStore();
   const [copied, setCopied] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -29,7 +29,7 @@ export const ResultStep = () => {
     if (generatedPrompt) {
       navigator.clipboard.writeText(generatedPrompt);
       setCopied(true);
-      toast.success('Prompt copiado com sucesso!');
+      toast.success('Prompt copiado! Lembre-se de anexar as imagens de referência no Lovable.');
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -94,6 +94,37 @@ export const ResultStep = () => {
       subtitle="Copie e cole diretamente no Lovable"
     >
       <div className="space-y-6">
+        {/* Reference Images Preview */}
+        {referenceImages.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="gradient-border rounded-2xl overflow-hidden"
+          >
+            <div className="bg-card p-4 border-b border-border flex items-center gap-2">
+              <ImageIcon className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium">Imagens de Referência ({referenceImages.length})</span>
+            </div>
+            <div className="p-4 bg-background/50">
+              <div className="grid grid-cols-3 gap-3">
+                {referenceImages.map((img, index) => (
+                  <div key={index} className="aspect-video rounded-lg overflow-hidden bg-muted">
+                    <img
+                      src={img}
+                      alt={`Referência ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-3 text-center">
+                ⚠️ Anexe estas imagens junto com o prompt no Lovable
+              </p>
+            </div>
+          </motion.div>
+        )}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -156,7 +187,10 @@ export const ResultStep = () => {
           transition={{ delay: 0.6 }}
           className="text-center text-sm text-muted-foreground"
         >
-          Dica: Cole o prompt no Lovable e veja a mágica acontecer ✨
+          {referenceImages.length > 0 
+            ? 'Dica: Cole o prompt e anexe as imagens de referência no Lovable ✨'
+            : 'Dica: Cole o prompt no Lovable e veja a mágica acontecer ✨'
+          }
         </motion.p>
       </div>
     </WizardStep>
