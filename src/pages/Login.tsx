@@ -61,10 +61,10 @@ export default function Login() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-semibold text-white mb-2 italic">
-            Welcome Back
+            Bem-vindo
           </h1>
           <p className="text-gray-400 text-sm">
-            Enter your credentials to access your account.
+            Entre com suas credenciais para acessar sua conta.
           </p>
         </div>
 
