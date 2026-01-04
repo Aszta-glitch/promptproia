@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Sparkles, ArrowRight, Zap, Target, Shield } from 'lucide-react';
+import { DottedSurface } from '@/components/ui/dotted-surface';
 
 interface HeroProps {
   onStart: () => void;
@@ -9,8 +10,10 @@ interface HeroProps {
 export const Hero = ({ onStart }: HeroProps) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
+      {/* 3D Dotted Surface Background */}
+      <DottedSurface className="opacity-40" />
+      
       {/* Background effects */}
-      <div className="absolute inset-0 bg-grid opacity-30" />
       <div className="absolute inset-0 bg-radial-gradient" />
       
       {/* Floating orbs */}
