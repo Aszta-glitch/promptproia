@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { WizardStep } from '../WizardStep';
 import { useWizardStore, AIPlatform } from '@/store/wizardStore';
-import { Button } from '@/components/ui/button';
 import { 
   Sparkles, 
   Zap, 
