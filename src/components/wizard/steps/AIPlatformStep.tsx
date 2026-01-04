@@ -8,7 +8,6 @@ import {
   MessageSquare, 
   Bot,
   Cpu,
-  Wand2,
   Terminal,
   Layers
 } from 'lucide-react';
@@ -72,14 +71,14 @@ const platforms: PlatformOption[] = [
     color: 'from-amber-500 to-orange-500',
   },
   {
-    id: 'gemini',
-    name: 'Gemini',
-    description: 'IA do Google para desenvolvimento',
-    icon: Wand2,
-    color: 'from-blue-500 to-indigo-500',
+    id: 'copilot',
+    name: 'GitHub Copilot',
+    description: 'Autocompletar código no editor',
+    icon: Cpu,
+    color: 'from-gray-500 to-gray-700',
   },
   {
-    id: 'copilot',
+    id: 'other',
     name: 'GitHub Copilot',
     description: 'Autocompletar código no editor',
     icon: Cpu,
