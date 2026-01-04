@@ -34,6 +34,7 @@ const platformLabels: Record<AIPlatform, string> = {
   claude: 'Claude',
   gemini: 'Gemini',
   copilot: 'GitHub Copilot',
+  other: 'Outra IA',
 };
 
 export const getProjectFeatures = (type: ProjectType, complexity: ComplexityLevel): string[] => {
@@ -232,6 +233,7 @@ const generators: Record<AIPlatform, (config: PromptConfig) => string> = {
   claude: generateClaudePrompt,
   gemini: generateGeminiPrompt,
   copilot: generateCopilotPrompt,
+  other: generateGenericPrompt,
 };
 
 function generateLovablePrompt(config: PromptConfig): string {
@@ -671,6 +673,51 @@ export const Component: React.FC<Props> = () => {
 
 ---
 *GitHub Copilot Prompt*`;
+}
+
+function generateGenericPrompt(config: PromptConfig): string {
+  const { projectType, objective, contextAnswers, targetAudience, complexity, visualStyle, referenceImages } = config;
+  const features = getProjectFeatures(projectType, complexity);
+  const contextDetails = formatContextDetails(contextAnswers);
+  const visualInstructions = getVisualInstructions(visualStyle);
+
+  return `# Prompt para Desenvolvimento
+
+## Contexto do Projeto
+
+**Tipo:** ${projectTypeLabels[projectType]}
+**Objetivo:** ${objective}
+**Público-alvo:** ${targetAudience}
+**Complexidade:** ${complexityLabels[complexity]}
+**Estilo Visual:** ${visualStyleLabels[visualStyle]}
+
+${contextDetails ? `## Detalhes\n${contextDetails}` : ''}
+
+${referenceImages.length > 0 ? `## Referências Visuais\n${referenceImages.length} imagem(ns) de referência anexada(s). Use como inspiração.\n` : ''}
+
+## Funcionalidades
+
+${features.map((f, i) => `${i + 1}. ${f}`).join('\n')}
+
+## Diretrizes de Design
+${visualInstructions}
+
+## Stack Tecnológica
+
+- React 18+ com TypeScript
+- Tailwind CSS
+- Componentes modernos
+- Design responsivo
+
+## Requisitos
+
+- Código limpo e organizado
+- Tratamento de erros
+- Estados de loading
+- Interface intuitiva
+
+---
+*Prompt Genérico*`;
 }
 
 export const generatePrompt = (
