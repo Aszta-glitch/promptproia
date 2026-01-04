@@ -14,14 +14,7 @@ export const Header = ({ showBackButton, onBack }: HeaderProps) => {
       className="fixed top-0 left-0 right-0 z-50 px-4 py-4"
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-        >
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary">
-            <Sparkles className="w-5 h-5 text-primary-foreground" />
-          </div>
-        </button>
+        <div /> {/* Spacer */}
 
         {showBackButton && (
           <button
