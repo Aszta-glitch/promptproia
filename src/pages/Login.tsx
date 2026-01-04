@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { SmokeyBackground, LoginForm } from '@/components/ui/login-form';
+import { Loader2 } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -57,20 +57,73 @@ export default function Login() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4">
-      <SmokeyBackground 
-        color="#6366f1" 
-        backdropBlurAmount="md" 
-        className="absolute inset-0"
-      />
-      <LoginForm
-        email={email}
-        password={password}
-        isLoading={isLoading}
-        onEmailChange={setEmail}
-        onPasswordChange={setPassword}
-        onSubmit={handleSubmit}
-      />
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-semibold text-white mb-2 italic">
+            Welcome Back
+          </h1>
+          <p className="text-gray-400 text-sm">
+            Enter your credentials to access your account.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <label htmlFor="email" className="block text-sm font-medium text-white">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
+              required
+              placeholder="seu@email.com"
+              className="w-full h-11 px-4 rounded-lg bg-[#1a1a1a] border border-[#333] text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition-all"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="password" className="block text-sm font-medium text-white">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
+              required
+              placeholder="••••••••••••"
+              className="w-full h-11 px-4 rounded-lg bg-[#1a1a1a] border border-[#333] text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition-all"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-11 rounded-full bg-[#e0e0e0] hover:bg-white text-black font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Entrando...
+              </>
+            ) : (
+              "Sign in"
+            )}
+          </button>
+        </form>
+
+        <p className="text-center mt-6 text-sm text-gray-400">
+          Forgot your password?{' '}
+          <button className="text-white font-medium hover:underline">
+            Reset password
+          </button>
+        </p>
+      </div>
     </div>
   );
 }
