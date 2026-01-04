@@ -1,34 +1,33 @@
 import { cn } from '@/lib/utils';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 type DottedSurfaceProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'ref'>;
 
 export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   const sceneRef = useRef<{
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
-    particles: THREE.Points[];
     animationId: number;
-    count: number;
   } | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const container = containerRef.current;
     const SEPARATION = 150;
     const AMOUNTX = 40;
     const AMOUNTY = 60;
 
     // Scene setup
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x0a0a0f, 2000, 10000);
 
     const camera = new THREE.PerspectiveCamera(
       60,
-      window.innerWidth / window.innerHeight,
+      container.clientWidth / container.clientHeight,
       1,
       10000,
     );
@@ -38,17 +37,16 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
       alpha: true,
       antialias: true,
     });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(scene.fog.color, 0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setClearColor(0x000000, 0);
 
-    containerRef.current.appendChild(renderer.domElement);
+    container.appendChild(renderer.domElement);
 
     // Create particles
     const positions: number[] = [];
     const colors: number[] = [];
 
-    // Create geometry for all particles
     const geometry = new THREE.BufferGeometry();
 
     for (let ix = 0; ix < AMOUNTX; ix++) {
@@ -58,8 +56,8 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
         const z = iy * SEPARATION - (AMOUNTY * SEPARATION) / 2;
 
         positions.push(x, y, z);
-        // Use primary color (purple/violet theme)
-        colors.push(0.6, 0.4, 1);
+        // Purple/violet theme matching the design
+        colors.push(0.55, 0.35, 1);
       }
     }
 
@@ -69,96 +67,82 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
     );
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-    // Create material
     const material = new THREE.PointsMaterial({
-      size: 8,
+      size: 6,
       vertexColors: true,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.8,
       sizeAttenuation: true,
     });
 
-    // Create points object
     const points = new THREE.Points(geometry, material);
     scene.add(points);
 
     let count = 0;
     let animationId: number;
 
-    // Animation function
     const animate = () => {
       animationId = requestAnimationFrame(animate);
 
       const positionAttribute = geometry.attributes.position;
-      const positions = positionAttribute.array as Float32Array;
+      const positionsArray = positionAttribute.array as Float32Array;
 
       let i = 0;
       for (let ix = 0; ix < AMOUNTX; ix++) {
         for (let iy = 0; iy < AMOUNTY; iy++) {
           const index = i * 3;
-
-          // Animate Y position with sine waves
-          positions[index + 1] =
+          positionsArray[index + 1] =
             Math.sin((ix + count) * 0.3) * 50 +
             Math.sin((iy + count) * 0.5) * 50;
-
           i++;
         }
       }
 
       positionAttribute.needsUpdate = true;
-
       renderer.render(scene, camera);
-      count += 0.1;
+      count += 0.08;
     };
 
-    // Handle window resize
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      if (!container) return;
+      camera.aspect = container.clientWidth / container.clientHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(container.clientWidth, container.clientHeight);
     };
 
     window.addEventListener('resize', handleResize);
 
-    // Start animation
     animate();
+    setIsLoaded(true);
 
-    // Store references
     sceneRef.current = {
       scene,
       camera,
       renderer,
-      particles: [points],
       animationId,
-      count,
     };
 
-    // Cleanup function
     return () => {
       window.removeEventListener('resize', handleResize);
 
       if (sceneRef.current) {
         cancelAnimationFrame(sceneRef.current.animationId);
 
-        // Clean up Three.js objects
-        sceneRef.current.scene.traverse((object) => {
+        scene.traverse((object) => {
           if (object instanceof THREE.Points) {
             object.geometry.dispose();
             if (Array.isArray(object.material)) {
-              object.material.forEach((material) => material.dispose());
+              object.material.forEach((mat) => mat.dispose());
             } else {
               object.material.dispose();
             }
           }
         });
 
-        sceneRef.current.renderer.dispose();
+        renderer.dispose();
 
-        if (containerRef.current && sceneRef.current.renderer.domElement) {
-          containerRef.current.removeChild(
-            sceneRef.current.renderer.domElement,
-          );
+        if (container && renderer.domElement && container.contains(renderer.domElement)) {
+          container.removeChild(renderer.domElement);
         }
       }
     };
@@ -167,7 +151,13 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
   return (
     <div
       ref={containerRef}
-      className={cn('absolute inset-0 -z-10', className)}
+      className={cn(
+        'absolute inset-0 pointer-events-none',
+        isLoaded ? 'opacity-100' : 'opacity-0',
+        'transition-opacity duration-500',
+        className
+      )}
+      style={{ zIndex: 0 }}
       {...props}
     />
   );
