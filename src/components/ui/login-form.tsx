@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { User, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+
 
 // Vertex shader source code
 const vertexSmokeySource = `
@@ -206,74 +207,82 @@ export function LoginForm({
   onPasswordChange,
   onSubmit,
 }: LoginFormProps) {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
-    <div className="relative z-10 w-full max-w-md p-8 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Bem-vindo</h1>
-        <p className="text-white/70">Entre com suas credenciais para acessar</p>
+    <div className="relative z-10 flex min-h-[400px] w-full max-w-sm flex-col items-center justify-center overflow-hidden rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-8 shadow-2xl">
+      <div className="w-full space-y-6">
+        <div className="space-y-2 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight text-white">
+            Bem-vindo
+          </h1>
+          <p className="text-sm text-white/70">
+            Entre com suas credenciais para acessar.
+          </p>
+        </div>
+
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="email" className="text-sm font-medium text-white/90">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => onEmailChange(e.target.value)}
+              disabled={isLoading}
+              required
+              placeholder="seu@email.com"
+              className="flex h-10 w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-all"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="password" className="text-sm font-medium text-white/90">
+              Senha
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => onPasswordChange(e.target.value)}
+                disabled={isLoading}
+                required
+                placeholder="••••••••"
+                className="flex h-10 w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 pr-10 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-10 rounded-lg bg-white text-gray-900 font-medium hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Entrando...
+              </>
+            ) : (
+              "Entrar"
+            )}
+          </button>
+        </form>
       </div>
-
-      <form onSubmit={onSubmit} className="space-y-6">
-        {/* Email Input with Animated Label */}
-        <div className="relative group">
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => onEmailChange(e.target.value)}
-            disabled={isLoading}
-            required
-            className="peer w-full px-4 py-3 pl-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-transparent focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300"
-            placeholder="Email"
-          />
-          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/50 peer-focus:text-white/80 transition-colors" />
-          <label
-            htmlFor="email"
-            className="absolute left-11 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none transition-all duration-300 peer-focus:-translate-y-9 peer-focus:left-0 peer-focus:text-sm peer-focus:text-white/80 peer-[:not(:placeholder-shown)]:-translate-y-9 peer-[:not(:placeholder-shown)]:left-0 peer-[:not(:placeholder-shown)]:text-sm"
-          >
-            Email
-          </label>
-        </div>
-
-        {/* Password Input with Animated Label */}
-        <div className="relative group">
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => onPasswordChange(e.target.value)}
-            disabled={isLoading}
-            required
-            className="peer w-full px-4 py-3 pl-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-transparent focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300"
-            placeholder="Senha"
-          />
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/50 peer-focus:text-white/80 transition-colors" />
-          <label
-            htmlFor="password"
-            className="absolute left-11 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none transition-all duration-300 peer-focus:-translate-y-9 peer-focus:left-0 peer-focus:text-sm peer-focus:text-white/80 peer-[:not(:placeholder-shown)]:-translate-y-9 peer-[:not(:placeholder-shown)]:left-0 peer-[:not(:placeholder-shown)]:text-sm"
-          >
-            Senha
-          </label>
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full py-3 px-4 bg-white/20 hover:bg-white/30 border border-white/20 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition-all duration-300 hover:shadow-lg hover:shadow-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              Entrando...
-            </>
-          ) : (
-            <>
-              Entrar
-              <ArrowRight className="h-5 w-5" />
-            </>
-          )}
-        </button>
-      </form>
     </div>
   );
 }
