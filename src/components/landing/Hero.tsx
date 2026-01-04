@@ -62,7 +62,7 @@ export const Hero = ({ onStart }: HeroProps) => {
           className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
         >
           Prompt{' '}
-          <span className="gradient-text">Mestre</span>
+          <span className="gradient-text">Pro</span>
           <br />
           IA
         </motion.h1>
