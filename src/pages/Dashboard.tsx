@@ -18,26 +18,16 @@ import {
   LayoutDashboard, 
   Settings, 
   User, 
-  Bell,
-  FileText,
-  BarChart3,
-  HelpCircle,
   Menu
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { NavLink, useLocation, Routes, Route } from 'react-router-dom';
 import DashboardHome from './dashboard/DashboardHome';
-import Documents from './dashboard/Documents';
-import Reports from './dashboard/Reports';
 import SettingsPage from './dashboard/Settings';
-import Help from './dashboard/Help';
 
 const menuItems = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-  { title: 'Documentos', url: '/dashboard/documents', icon: FileText },
-  { title: 'Relatórios', url: '/dashboard/reports', icon: BarChart3 },
   { title: 'Configurações', url: '/dashboard/settings', icon: Settings },
-  { title: 'Ajuda', url: '/dashboard/help', icon: HelpCircle },
 ];
 
 function DashboardSidebar() {
@@ -114,18 +104,12 @@ export default function Dashboard() {
               <Menu className="h-5 w-5" />
             </SidebarTrigger>
             <div className="flex-1" />
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
-            </Button>
           </header>
 
           {/* Content */}
           <Routes>
             <Route index element={<DashboardHome />} />
-            <Route path="documents" element={<Documents />} />
-            <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<SettingsPage />} />
-            <Route path="help" element={<Help />} />
           </Routes>
         </main>
       </div>
