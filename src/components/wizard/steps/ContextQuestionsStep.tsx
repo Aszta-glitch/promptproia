@@ -99,7 +99,7 @@ export const ContextQuestionsStep = () => {
               <Sparkles className="w-4 h-4 text-primary absolute -top-1 -right-1" />
             </div>
             <p className="text-muted-foreground text-sm">
-              Gemini está gerando perguntas personalizadas...
+              IA está gerando perguntas personalizadas...
             </p>
           </motion.div>
         ) : (
