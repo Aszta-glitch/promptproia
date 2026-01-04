@@ -29,7 +29,8 @@ const styleOptions: { style: VisualStyle; title: string; description: string; ic
 export const VisualStyleStep = () => {
   const { 
     visualStyle, 
-    setVisualStyle, 
+    setVisualStyle,
+    aiPlatform,
     projectType, 
     objective,
     contextAnswers,
@@ -45,8 +46,9 @@ export const VisualStyleStep = () => {
     setVisualStyle(style);
     
     // Generate the prompt
-    if (projectType && complexity) {
+    if (aiPlatform && projectType && complexity) {
       const prompt = generatePrompt(
+        aiPlatform,
         projectType,
         objective,
         contextAnswers,

@@ -1,5 +1,6 @@
 import { useWizardStore } from '@/store/wizardStore';
 import { ProgressBar } from './ProgressBar';
+import { AIPlatformStep } from './steps/AIPlatformStep';
 import { ProjectTypeStep } from './steps/ProjectTypeStep';
 import { ObjectiveStep } from './steps/ObjectiveStep';
 import { ContextQuestionsStep } from './steps/ContextQuestionsStep';
@@ -9,9 +10,10 @@ import { ReferenceImagesStep } from './steps/ReferenceImagesStep';
 import { VisualStyleStep } from './steps/VisualStyleStep';
 import { ResultStep } from './steps/ResultStep';
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 9;
 
 const steps = [
+  AIPlatformStep,
   ProjectTypeStep,
   ObjectiveStep,
   ContextQuestionsStep,
