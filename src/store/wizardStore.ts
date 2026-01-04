@@ -3,9 +3,11 @@ import { create } from 'zustand';
 export type ProjectType = 'crud' | 'dashboard' | 'saas' | 'landing' | 'tool';
 export type ComplexityLevel = 'mvp' | 'intermediate' | 'advanced';
 export type VisualStyle = 'minimalist' | 'modern' | 'bold';
+export type AIPlatform = 'lovable' | 'cursor' | 'bolt' | 'v0' | 'replit' | 'chatgpt' | 'claude' | 'gemini' | 'copilot';
 
 export interface WizardState {
   currentStep: number;
+  aiPlatform: AIPlatform | null;
   projectType: ProjectType | null;
   objective: string;
   contextAnswers: Record<string, string>;
@@ -17,6 +19,7 @@ export interface WizardState {
   
   // Actions
   setStep: (step: number) => void;
+  setAIPlatform: (platform: AIPlatform) => void;
   setProjectType: (type: ProjectType) => void;
   setObjective: (objective: string) => void;
   setContextAnswers: (answers: Record<string, string>) => void;
@@ -32,6 +35,7 @@ export interface WizardState {
 
 const initialState = {
   currentStep: 0,
+  aiPlatform: null,
   projectType: null,
   objective: '',
   contextAnswers: {},
@@ -46,6 +50,7 @@ export const useWizardStore = create<WizardState>((set) => ({
   ...initialState,
   
   setStep: (step) => set({ currentStep: step }),
+  setAIPlatform: (platform) => set({ aiPlatform: platform }),
   setProjectType: (type) => set({ projectType: type }),
   setObjective: (objective) => set({ objective }),
   setContextAnswers: (answers) => set({ contextAnswers: answers }),

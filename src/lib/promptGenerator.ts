@@ -1,4 +1,4 @@
-import { ProjectType, ComplexityLevel, VisualStyle } from '@/store/wizardStore';
+import { ProjectType, ComplexityLevel, VisualStyle, AIPlatform } from '@/store/wizardStore';
 
 const projectTypeLabels: Record<ProjectType, string> = {
   crud: 'CRUD/Admin Panel',
@@ -20,7 +20,19 @@ const visualStyleLabels: Record<VisualStyle, string> = {
   bold: 'Ousado/Impactante',
 };
 
-const getProjectFeatures = (type: ProjectType, complexity: ComplexityLevel): string[] => {
+const platformLabels: Record<AIPlatform, string> = {
+  lovable: 'Lovable',
+  cursor: 'Cursor',
+  bolt: 'Bolt.new',
+  v0: 'v0 (Vercel)',
+  replit: 'Replit',
+  chatgpt: 'ChatGPT',
+  claude: 'Claude',
+  gemini: 'Gemini',
+  copilot: 'GitHub Copilot',
+};
+
+export const getProjectFeatures = (type: ProjectType, complexity: ComplexityLevel): string[] => {
   const baseFeatures: Record<ProjectType, string[]> = {
     crud: [
       'Listagem de dados com paginação',
@@ -96,7 +108,7 @@ const getProjectFeatures = (type: ProjectType, complexity: ComplexityLevel): str
   }
 };
 
-const getVisualInstructions = (style: VisualStyle): string => {
+export const getVisualInstructions = (style: VisualStyle): string => {
   const instructions: Record<VisualStyle, string> = {
     minimalist: `
 - Paleta de cores limitada (máx. 3 cores)
@@ -121,20 +133,8 @@ const getVisualInstructions = (style: VisualStyle): string => {
   return instructions[style];
 };
 
-export const generatePrompt = (
-  projectType: ProjectType,
-  objective: string,
-  contextAnswers: Record<string, string>,
-  targetAudience: string,
-  complexity: ComplexityLevel,
-  visualStyle: VisualStyle,
-  referenceImages: string[] = []
-): string => {
-  const features = getProjectFeatures(projectType, complexity);
-  const visualInstructions = getVisualInstructions(visualStyle);
-
-  // Formata as respostas contextuais
-  const contextDetails = Object.entries(contextAnswers)
+const formatContextDetails = (contextAnswers: Record<string, string>): string => {
+  return Object.entries(contextAnswers)
     .filter(([, value]) => value?.trim())
     .map(([key, value]) => {
       const labels: Record<string, string> = {
@@ -157,117 +157,491 @@ export const generatePrompt = (
       return `- **${labels[key] || key}:** ${value}`;
     })
     .join('\n');
+};
+
+interface PromptConfig {
+  projectType: ProjectType;
+  objective: string;
+  contextAnswers: Record<string, string>;
+  targetAudience: string;
+  complexity: ComplexityLevel;
+  visualStyle: VisualStyle;
+  referenceImages: string[];
+}
+
+// Platform-specific prompt generators
+const generators: Record<AIPlatform, (config: PromptConfig) => string> = {
+  lovable: generateLovablePrompt,
+  cursor: generateCursorPrompt,
+  bolt: generateBoltPrompt,
+  v0: generateV0Prompt,
+  replit: generateReplitPrompt,
+  chatgpt: generateChatGPTPrompt,
+  claude: generateClaudePrompt,
+  gemini: generateGeminiPrompt,
+  copilot: generateCopilotPrompt,
+};
+
+function generateLovablePrompt(config: PromptConfig): string {
+  const { projectType, objective, contextAnswers, targetAudience, complexity, visualStyle, referenceImages } = config;
+  const features = getProjectFeatures(projectType, complexity);
+  const visualInstructions = getVisualInstructions(visualStyle);
+  const contextDetails = formatContextDetails(contextAnswers);
 
   const referenceSection = referenceImages.length > 0 
-    ? `
----
+    ? `\n---\n\n## 🖼️ REFERÊNCIAS VISUAIS\n\n**IMPORTANTE:** ${referenceImages.length} imagem(ns) de referência anexadas.\nUse como inspiração para cores, layout, componentes e estilo geral.\n` : '';
 
-## 🖼️ REFERÊNCIAS VISUAIS
+  return `# Prompt Otimizado para Lovable
 
-**IMPORTANTE:** ${referenceImages.length} imagem(ns) de referência foram anexadas a este prompt.
-Use estas imagens como inspiração visual para:
-- Paleta de cores
-- Layout e composição
-- Estilo de componentes
-- Tipografia e espaçamentos
-- Tom geral do design
-
-Analise cada imagem de referência e extraia os elementos visuais mais relevantes para incorporar no projeto.
-` : '';
-
-  const prompt = `# Prompt Otimizado para Lovable
-
-## 🎯 CONTEXTO (C.L.E.A.R. Framework)
+## 🎯 CONTEXTO
 
 **Tipo de Projeto:** ${projectTypeLabels[projectType]}
 **Objetivo Principal:** ${objective}
 **Público-Alvo:** ${targetAudience}
-**Nível de Complexidade:** ${complexityLabels[complexity]}
+**Complexidade:** ${complexityLabels[complexity]}
 **Estilo Visual:** ${visualStyleLabels[visualStyle]}
 
-${contextDetails ? `### Detalhes Específicos:
-${contextDetails}` : ''}
+${contextDetails ? `### Detalhes:\n${contextDetails}` : ''}
 ${referenceSection}
 ---
 
-## 📋 LAYOUT & ESTRUTURA
+## 📋 FUNCIONALIDADES
 
-Crie um ${projectTypeLabels[projectType].toLowerCase()} com as seguintes características:
-
-### Funcionalidades Principais (Etapa 1):
-${features.slice(0, Math.min(4, features.length)).map((f, i) => `${i + 1}. ${f}`).join('\n')}
-
-${features.length > 4 ? `### Funcionalidades Adicionais (Etapa 2):
-${features.slice(4).map((f, i) => `${i + 1}. ${f}`).join('\n')}` : ''}
+${features.map((f, i) => `${i + 1}. ${f}`).join('\n')}
 
 ---
 
 ## 🎨 ESTILO VISUAL
-
 ${visualInstructions}
 
-### Requisitos de UI/UX:
-- Interface intuitiva e acessível
-- Design responsivo (mobile-first)
-- Feedback visual para todas as ações
+### UI/UX:
+- Interface responsiva (mobile-first)
+- Feedback visual para ações
 - Estados de loading e erro
-- Navegação clara e consistente
+- Navegação clara
 
 ---
 
-## ⚡ ESPECIFICAÇÕES TÉCNICAS
+## ⚡ STACK
 
-### Stack Recomendada:
 - React + TypeScript
+- Tailwind CSS
+- Shadcn/UI
+- Framer Motion
+${complexity !== 'mvp' ? '- Supabase (backend)' : ''}
+
+---
+
+## 🛡️ NÃO FAÇA
+
+❌ Cores genéricas
+❌ Formulários longos sem etapas
+❌ Ignorar loading/erro
+❌ Lorem ipsum
+
+---
+
+*Prompt para Lovable*`;
+}
+
+function generateCursorPrompt(config: PromptConfig): string {
+  const { projectType, objective, contextAnswers, targetAudience, complexity, visualStyle, referenceImages } = config;
+  const features = getProjectFeatures(projectType, complexity);
+  const contextDetails = formatContextDetails(contextAnswers);
+
+  return `# Task: Create ${projectTypeLabels[projectType]}
+
+## Context
+- **Goal:** ${objective}
+- **Target Users:** ${targetAudience}
+- **Complexity:** ${complexityLabels[complexity]}
+- **Style:** ${visualStyleLabels[visualStyle]}
+
+${contextDetails ? `## Details\n${contextDetails}` : ''}
+
+${referenceImages.length > 0 ? `## Visual References\n${referenceImages.length} reference image(s) attached. Match their style.\n` : ''}
+
+## Requirements
+
+### Features
+${features.map((f, i) => `${i + 1}. ${f}`).join('\n')}
+
+### Tech Stack
+- React 18+ with TypeScript
+- Tailwind CSS for styling
+- Proper component architecture
+- Type-safe code throughout
+
+### Code Quality
+- Follow React best practices
+- Use custom hooks for logic
+- Implement proper error handling
+- Add TypeScript interfaces
+- Write clean, maintainable code
+
+### Structure
+\`\`\`
+src/
+├── components/     # UI components
+├── hooks/          # Custom hooks
+├── lib/            # Utilities
+├── types/          # TypeScript types
+└── pages/          # Page components
+\`\`\`
+
+## Instructions
+1. Start with core components
+2. Add business logic
+3. Implement styling
+4. Add error handling
+5. Refactor for quality
+
+---
+*Cursor Prompt*`;
+}
+
+function generateBoltPrompt(config: PromptConfig): string {
+  const { projectType, objective, contextAnswers, targetAudience, complexity, visualStyle, referenceImages } = config;
+  const features = getProjectFeatures(projectType, complexity);
+  const contextDetails = formatContextDetails(contextAnswers);
+  const visualInstructions = getVisualInstructions(visualStyle);
+
+  return `Create a ${projectTypeLabels[projectType].toLowerCase()}
+
+## What I need:
+${objective}
+
+## Target audience:
+${targetAudience}
+
+${contextDetails ? `## Specifics:\n${contextDetails}` : ''}
+
+${referenceImages.length > 0 ? `## Design reference:\n${referenceImages.length} image(s) attached - match this style\n` : ''}
+
+## Features to include:
+${features.map(f => `• ${f}`).join('\n')}
+
+## Visual style: ${visualStyleLabels[visualStyle]}
+${visualInstructions}
+
+## Tech requirements:
+- React + TypeScript
+- Tailwind CSS
+- Modern, clean code
+- Mobile responsive
+- Proper error states
+
+## Important:
+- Keep it simple and functional
+- Use placeholder data that makes sense
+- Add smooth animations
+- Make it production-ready
+
+---
+*Bolt.new Prompt*`;
+}
+
+function generateV0Prompt(config: PromptConfig): string {
+  const { projectType, objective, targetAudience, complexity, visualStyle, referenceImages } = config;
+  const features = getProjectFeatures(projectType, complexity);
+  const visualInstructions = getVisualInstructions(visualStyle);
+
+  return `Create a ${projectTypeLabels[projectType].toLowerCase()} component
+
+${objective}
+
+For: ${targetAudience}
+
+${referenceImages.length > 0 ? `Match the style of the ${referenceImages.length} attached reference image(s).\n` : ''}
+
+## Components needed:
+${features.map(f => `- ${f}`).join('\n')}
+
+## Style: ${visualStyleLabels[visualStyle]}
+${visualInstructions}
+
+## Requirements:
+- Use shadcn/ui components
+- Tailwind CSS styling
+- TypeScript
+- Responsive design
+- Dark mode support
+- Accessible (ARIA)
+
+## Output:
+Single file with all components, properly typed and styled.
+
+---
+*v0 Prompt*`;
+}
+
+function generateReplitPrompt(config: PromptConfig): string {
+  const { projectType, objective, contextAnswers, targetAudience, complexity, visualStyle, referenceImages } = config;
+  const features = getProjectFeatures(projectType, complexity);
+  const contextDetails = formatContextDetails(contextAnswers);
+
+  return `# Build: ${projectTypeLabels[projectType]}
+
+## Goal
+${objective}
+
+## Users
+${targetAudience}
+
+${contextDetails ? `## Details\n${contextDetails}` : ''}
+
+${referenceImages.length > 0 ? `## Reference\n${referenceImages.length} design reference(s) attached\n` : ''}
+
+## Features
+${features.map((f, i) => `${i + 1}. ${f}`).join('\n')}
+
+## Style
+${visualStyleLabels[visualStyle]}
+
+## Stack
+- React + Vite
+- TypeScript
+- Tailwind CSS
+- File-based routing
+
+## Structure
+Create proper folder structure with:
+- /src/components
+- /src/pages
+- /src/hooks
+- /src/lib
+
+## Notes
+- Use environment variables for secrets
+- Add proper error handling
+- Make it mobile-friendly
+- Include loading states
+
+---
+*Replit Prompt*`;
+}
+
+function generateChatGPTPrompt(config: PromptConfig): string {
+  const { projectType, objective, contextAnswers, targetAudience, complexity, visualStyle, referenceImages } = config;
+  const features = getProjectFeatures(projectType, complexity);
+  const contextDetails = formatContextDetails(contextAnswers);
+  const visualInstructions = getVisualInstructions(visualStyle);
+
+  return `Você é um desenvolvedor frontend sênior especializado em React e TypeScript.
+
+Preciso que você me ajude a criar um ${projectTypeLabels[projectType].toLowerCase()}.
+
+## Contexto do Projeto
+
+**Objetivo:** ${objective}
+**Público-alvo:** ${targetAudience}
+**Nível de complexidade:** ${complexityLabels[complexity]}
+
+${contextDetails ? `## Detalhes Específicos\n${contextDetails}` : ''}
+
+${referenceImages.length > 0 ? `## Referências Visuais\nAnexei ${referenceImages.length} imagem(ns) de referência. Use como inspiração para o design.\n` : ''}
+
+## Funcionalidades Necessárias
+
+${features.map((f, i) => `${i + 1}. ${f}`).join('\n')}
+
+## Estilo Visual Desejado: ${visualStyleLabels[visualStyle]}
+${visualInstructions}
+
+## Stack Técnica
+
+- React 18 com TypeScript
 - Tailwind CSS para estilização
-- Shadcn/UI para componentes base
-- Framer Motion para animações
-${complexity !== 'mvp' ? '- Supabase para backend (se necessário)' : ''}
+- Componentes funcionais com hooks
+- Design responsivo
 
-### Comportamentos Esperados:
-- Validação de formulários em tempo real
-- Tratamento de erros com mensagens amigáveis
-- Persistência de dados (localStorage ou backend)
-- Transições suaves entre estados
+## O que preciso de você:
 
----
+1. **Estrutura do projeto** - Como organizar os arquivos
+2. **Componentes principais** - Código completo e comentado
+3. **Lógica de negócio** - Hooks customizados se necessário
+4. **Estilização** - Classes Tailwind bem organizadas
 
-## 🛡️ GUARDRAILS (NÃO FAÇA)
-
-❌ NÃO use cores genéricas ou sem identidade
-❌ NÃO crie formulários longos sem divisão em etapas
-❌ NÃO ignore estados de erro e loading
-❌ NÃO use componentes sem acessibilidade
-❌ NÃO deixe a navegação confusa
-❌ NÃO implemente mais de 4 funcionalidades por etapa
-❌ NÃO use placeholder content ("Lorem ipsum")
+Por favor, forneça código limpo, bem organizado e pronto para produção.
 
 ---
+*ChatGPT Prompt*`;
+}
 
-## ✅ VALIDAÇÕES
+function generateClaudePrompt(config: PromptConfig): string {
+  const { projectType, objective, contextAnswers, targetAudience, complexity, visualStyle, referenceImages } = config;
+  const features = getProjectFeatures(projectType, complexity);
+  const contextDetails = formatContextDetails(contextAnswers);
+  const visualInstructions = getVisualInstructions(visualStyle);
 
-Antes de finalizar, verifique:
-- [ ] Todas as funcionalidades listadas estão implementadas
-- [ ] O design segue o estilo visual definido
-- [ ] A interface é responsiva
-- [ ] Os estados de loading/erro estão tratados
-- [ ] A navegação é intuitiva
-- [ ] O código está organizado e comentado
+  return `<context>
+Você é um engenheiro de software sênior com expertise em React, TypeScript e design de sistemas.
+</context>
+
+<task>
+Criar um ${projectTypeLabels[projectType].toLowerCase()} completo e funcional.
+</task>
+
+<requirements>
+## Objetivo Principal
+${objective}
+
+## Público-Alvo
+${targetAudience}
+
+## Nível de Complexidade
+${complexityLabels[complexity]}
+
+${contextDetails ? `## Contexto Adicional\n${contextDetails}` : ''}
+
+${referenceImages.length > 0 ? `## Referências Visuais\n${referenceImages.length} imagem(ns) anexada(s) como referência de design. Analise e extraia:\n- Paleta de cores\n- Tipografia\n- Layout e espaçamento\n- Estilo de componentes\n` : ''}
+
+## Funcionalidades Requeridas
+${features.map((f, i) => `${i + 1}. ${f}`).join('\n')}
+
+## Diretrizes de Estilo: ${visualStyleLabels[visualStyle]}
+${visualInstructions}
+</requirements>
+
+<technical-stack>
+- React 18+ com TypeScript estrito
+- Tailwind CSS para estilização
+- Arquitetura de componentes limpa
+- Custom hooks para lógica reutilizável
+- Tratamento de erros robusto
+- Acessibilidade (WCAG 2.1)
+</technical-stack>
+
+<output-format>
+Forneça:
+1. Estrutura de pastas recomendada
+2. Tipos/interfaces TypeScript
+3. Componentes com código completo
+4. Hooks customizados se necessário
+5. Instruções de implementação
+
+Use blocos de código com syntax highlighting e comentários explicativos.
+</output-format>
+
+<constraints>
+- Código limpo e manutenível
+- Sem dependências desnecessárias
+- Performance otimizada
+- Mobile-first responsive
+</constraints>
 
 ---
+*Claude Prompt*`;
+}
 
-## 📝 INSTRUÇÕES DE IMPLEMENTAÇÃO
+function generateGeminiPrompt(config: PromptConfig): string {
+  const { projectType, objective, contextAnswers, targetAudience, complexity, visualStyle, referenceImages } = config;
+  const features = getProjectFeatures(projectType, complexity);
+  const contextDetails = formatContextDetails(contextAnswers);
+  const visualInstructions = getVisualInstructions(visualStyle);
 
-1. **Comece pelo Design System**: Defina cores, tipografia e componentes base
-2. **Estruture o Layout**: Crie a navegação e estrutura de páginas
-3. **Implemente as Features**: Uma por uma, testando cada uma
-4. **Refine a UX**: Adicione animações, feedback e polish
-5. **Teste e Otimize**: Verifique responsividade e performance
+  return `# Solicitação de Desenvolvimento
+
+## Papel
+Você é um desenvolvedor full-stack experiente especializado em aplicações web modernas.
+
+## Projeto
+**Tipo:** ${projectTypeLabels[projectType]}
+**Objetivo:** ${objective}
+**Usuários:** ${targetAudience}
+**Complexidade:** ${complexityLabels[complexity]}
+
+${contextDetails ? `## Detalhes do Projeto\n${contextDetails}` : ''}
+
+${referenceImages.length > 0 ? `## Referências de Design\nAnalise as ${referenceImages.length} imagem(ns) anexada(s) e use como base para:\n- Esquema de cores\n- Layout geral\n- Estilo dos componentes\n- Hierarquia visual\n` : ''}
+
+## Funcionalidades
+${features.map((f, i) => `${i + 1}. ${f}`).join('\n')}
+
+## Estilo Visual: ${visualStyleLabels[visualStyle]}
+${visualInstructions}
+
+## Tecnologias
+- React + TypeScript
+- Tailwind CSS
+- Componentes reutilizáveis
+- Design responsivo
+
+## Entregáveis
+1. Código dos componentes principais
+2. Estrutura de tipos TypeScript
+3. Estilos com Tailwind
+4. Instruções de uso
+
+## Qualidade
+- Código comentado
+- Boas práticas React
+- Acessível e performático
 
 ---
+*Gemini Prompt*`;
+}
 
-*Prompt gerado por Prompt Mestre Lovable • Framework C.L.E.A.R.*
-`;
+function generateCopilotPrompt(config: PromptConfig): string {
+  const { projectType, objective, complexity, visualStyle, referenceImages } = config;
+  const features = getProjectFeatures(projectType, complexity);
 
-  return prompt;
+  return `// ${projectTypeLabels[projectType]} - ${objective}
+// Style: ${visualStyleLabels[visualStyle]}
+// Complexity: ${complexityLabels[complexity]}
+${referenceImages.length > 0 ? `// Reference: ${referenceImages.length} design image(s) attached` : ''}
+
+// Features to implement:
+${features.map(f => `// - ${f}`).join('\n')}
+
+// Tech: React, TypeScript, Tailwind CSS
+// Requirements:
+// - Functional components with hooks
+// - Type-safe props and state
+// - Responsive design
+// - Clean code structure
+
+// Start implementing below:
+
+import React from 'react';
+
+interface Props {
+  // Add your props here
+}
+
+export const Component: React.FC<Props> = () => {
+  return (
+    <div className="container mx-auto p-4">
+      {/* Implement your component */}
+    </div>
+  );
 };
+
+---
+*GitHub Copilot Prompt*`;
+}
+
+export const generatePrompt = (
+  aiPlatform: AIPlatform,
+  projectType: ProjectType,
+  objective: string,
+  contextAnswers: Record<string, string>,
+  targetAudience: string,
+  complexity: ComplexityLevel,
+  visualStyle: VisualStyle,
+  referenceImages: string[] = []
+): string => {
+  const config: PromptConfig = {
+    projectType,
+    objective,
+    contextAnswers,
+    targetAudience,
+    complexity,
+    visualStyle,
+    referenceImages,
+  };
+
+  return generators[aiPlatform](config);
+};
+
+export { platformLabels, projectTypeLabels, complexityLabels, visualStyleLabels };

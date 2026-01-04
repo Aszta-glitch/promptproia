@@ -5,9 +5,10 @@ import { useWizardStore } from '@/store/wizardStore';
 import { Button } from '@/components/ui/button';
 import { Copy, Download, Check, Lock, RotateCcw, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { platformLabels } from '@/lib/promptGenerator';
 
 export const ResultStep = () => {
-  const { generatedPrompt, referenceImages, reset } = useWizardStore();
+  const { generatedPrompt, referenceImages, aiPlatform, reset } = useWizardStore();
   const [copied, setCopied] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -87,11 +88,13 @@ export const ResultStep = () => {
     );
   }
 
+  const platformName = aiPlatform ? platformLabels[aiPlatform] : 'IA';
+
   return (
     <WizardStep
       stepKey="result"
       title="Seu prompt está pronto! 🎉"
-      subtitle="Copie e cole diretamente no Lovable"
+      subtitle={`Otimizado para ${platformName}`}
     >
       <div className="space-y-6">
         {/* Reference Images Preview */}
