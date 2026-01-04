@@ -6,6 +6,10 @@ const projectTypeLabels: Record<ProjectType, string> = {
   saas: 'SaaS/Aplicação Web',
   landing: 'Landing Page',
   tool: 'Ferramenta/Utilitário',
+  mobile: 'App Mobile/PWA',
+  ecommerce: 'E-commerce/Loja',
+  portfolio: 'Portfólio/Blog',
+  chatbot: 'Chatbot/IA',
 };
 
 const complexityLabels: Record<ComplexityLevel, string> = {
@@ -64,6 +68,30 @@ export const getProjectFeatures = (type: ProjectType, complexity: ComplexityLeve
       'Visualização de resultados',
       'Opção de exportar/salvar',
     ],
+    mobile: [
+      'Interface touch-friendly',
+      'Navegação por gestos/tabs',
+      'Notificações push',
+      'Funcionamento offline',
+    ],
+    ecommerce: [
+      'Catálogo de produtos',
+      'Carrinho de compras',
+      'Sistema de checkout',
+      'Gestão de pedidos',
+    ],
+    portfolio: [
+      'Galeria de trabalhos',
+      'Página sobre/bio',
+      'Formulário de contato',
+      'Links para redes sociais',
+    ],
+    chatbot: [
+      'Interface de chat',
+      'Respostas inteligentes',
+      'Histórico de conversas',
+      'Indicador de digitação',
+    ],
   };
 
   const advancedFeatures: Record<ProjectType, string[]> = {
@@ -96,6 +124,30 @@ export const getProjectFeatures = (type: ProjectType, complexity: ComplexityLeve
       'Presets salvos',
       'Colaboração em tempo real',
       'Integrações externas',
+    ],
+    mobile: [
+      'Sincronização em background',
+      'Biometria/autenticação',
+      'Cache inteligente',
+      'Deep linking',
+    ],
+    ecommerce: [
+      'Sistema de avaliações',
+      'Cupons/descontos',
+      'Lista de desejos',
+      'Recomendações inteligentes',
+    ],
+    portfolio: [
+      'Blog integrado',
+      'Área de depoimentos',
+      'Download de CV',
+      'Animações interativas',
+    ],
+    chatbot: [
+      'Integração com IA',
+      'Contexto de conversa',
+      'Ações automáticas',
+      'Análise de sentimento',
     ],
   };
 

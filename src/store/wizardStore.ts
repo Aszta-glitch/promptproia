@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type ProjectType = 'crud' | 'dashboard' | 'saas' | 'landing' | 'tool';
+export type ProjectType = 'crud' | 'dashboard' | 'saas' | 'landing' | 'tool' | 'mobile' | 'ecommerce' | 'portfolio' | 'chatbot';
 export type ComplexityLevel = 'mvp' | 'intermediate' | 'advanced';
 export type VisualStyle = 'minimalist' | 'modern' | 'bold';
 export type AIPlatform = 'lovable' | 'cursor' | 'bolt' | 'v0' | 'replit' | 'chatgpt' | 'claude' | 'gemini' | 'copilot';

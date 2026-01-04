@@ -61,7 +61,7 @@ export const Hero = ({ onStart }: HeroProps) => {
           Prompt{' '}
           <span className="gradient-text">Mestre</span>
           <br />
-          Lovable
+          IA
         </motion.h1>
 
         {/* Subtitle */}
@@ -71,8 +71,8 @@ export const Hero = ({ onStart }: HeroProps) => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto"
         >
-          Crie prompts otimizados para o Lovable em menos de 3 minutos.
-          Sem complicação, resultados profissionais.
+          Crie prompts otimizados para Lovable, Cursor, ChatGPT, Claude e mais.
+          Em menos de 3 minutos, resultados profissionais.
         </motion.p>
 
         {/* CTA Button */}
