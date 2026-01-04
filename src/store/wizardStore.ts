@@ -12,6 +12,7 @@ export interface WizardState {
   targetAudience: string;
   complexity: ComplexityLevel | null;
   visualStyle: VisualStyle | null;
+  referenceImages: string[];
   generatedPrompt: string | null;
   
   // Actions
@@ -22,6 +23,7 @@ export interface WizardState {
   setTargetAudience: (audience: string) => void;
   setComplexity: (level: ComplexityLevel) => void;
   setVisualStyle: (style: VisualStyle) => void;
+  setReferenceImages: (images: string[]) => void;
   setGeneratedPrompt: (prompt: string) => void;
   reset: () => void;
   nextStep: () => void;
@@ -36,6 +38,7 @@ const initialState = {
   targetAudience: '',
   complexity: null,
   visualStyle: null,
+  referenceImages: [],
   generatedPrompt: null,
 };
 
@@ -49,6 +52,7 @@ export const useWizardStore = create<WizardState>((set) => ({
   setTargetAudience: (audience) => set({ targetAudience: audience }),
   setComplexity: (level) => set({ complexity: level }),
   setVisualStyle: (style) => set({ visualStyle: style }),
+  setReferenceImages: (images) => set({ referenceImages: images }),
   setGeneratedPrompt: (prompt) => set({ generatedPrompt: prompt }),
   reset: () => set(initialState),
   nextStep: () => set((state) => ({ currentStep: state.currentStep + 1 })),

@@ -35,6 +35,7 @@ export const VisualStyleStep = () => {
     contextAnswers,
     targetAudience, 
     complexity,
+    referenceImages,
     setGeneratedPrompt,
     nextStep,
     prevStep 
@@ -51,7 +52,8 @@ export const VisualStyleStep = () => {
         contextAnswers,
         targetAudience,
         complexity,
-        style
+        style,
+        referenceImages
       );
       setGeneratedPrompt(prompt);
       setTimeout(() => nextStep(), 300);
