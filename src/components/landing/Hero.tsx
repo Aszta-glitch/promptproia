@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Sparkles, ArrowRight, Zap, Target, Shield } from 'lucide-react';
+import { Sparkles, Zap, Target, Shield } from 'lucide-react';
 import { DottedSurface } from '@/components/ui/dotted-surface';
+import { GetStartedButton } from '@/components/ui/get-started-button';
 
 interface HeroProps {
   onStart: () => void;
@@ -83,15 +83,9 @@ export const Hero = ({ onStart }: HeroProps) => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mb-16"
         >
-          <Button
-            variant="gradient"
-            size="xl"
-            onClick={onStart}
-            className="group"
-          >
+          <GetStartedButton onClick={onStart}>
             Criar meu prompt
-            <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          </GetStartedButton>
         </motion.div>
 
         {/* Features */}
