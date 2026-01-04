@@ -51,7 +51,10 @@ serve(async (req) => {
     } else {
       // Normal flow: Verify the requesting user is an admin
       const authHeader = req.headers.get("Authorization");
+      console.log("Auth header present:", !!authHeader);
+      
       if (!authHeader) {
+        console.log("No auth header found");
         return new Response(
           JSON.stringify({ error: "Não autorizado" }),
           { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -59,15 +62,21 @@ serve(async (req) => {
       }
       
       const token = authHeader.replace("Bearer ", "");
+      console.log("Token extracted, length:", token.length);
       
-      const { data: { user: requestingUser }, error: userError } = await supabaseAdmin.auth.getUser(token);
+      const { data: userData, error: userError } = await supabaseAdmin.auth.getUser(token);
+      console.log("GetUser result - error:", userError?.message, "user:", userData?.user?.email);
       
-      if (userError || !requestingUser) {
+      if (userError || !userData?.user) {
+        console.log("User verification failed:", userError?.message);
         return new Response(
           JSON.stringify({ error: "Não autorizado" }),
           { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
+      const requestingUser = userData.user;
+      console.log("Requesting user:", requestingUser.email);
 
       // Check if requesting user is admin
       const { data: roleData, error: roleError } = await supabaseAdmin
@@ -76,12 +85,17 @@ serve(async (req) => {
         .eq("user_id", requestingUser.id)
         .single();
 
+      console.log("Role check - role:", roleData?.role, "error:", roleError?.message);
+
       if (roleError || roleData?.role !== "admin") {
+        console.log("Not admin, access denied");
         return new Response(
           JSON.stringify({ error: "Acesso negado. Apenas administradores podem criar usuários." }),
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+      
+      console.log("Admin verified, proceeding to create user");
     }
 
     if (!email || !password) {
