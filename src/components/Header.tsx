@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { LogIn } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -16,14 +18,23 @@ export const Header = ({ showBackButton, onBack }: HeaderProps) => {
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <div /> {/* Spacer */}
 
-        {showBackButton && (
-          <button
-            onClick={onBack}
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            ← Voltar ao início
-          </button>
-        )}
+        <div className="flex items-center gap-4">
+          {showBackButton && (
+            <button
+              onClick={onBack}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ← Voltar ao início
+            </button>
+          )}
+          
+          <Link to="/login">
+            <Button variant="outline" size="sm" className="gap-2">
+              <LogIn className="h-4 w-4" />
+              Entrar
+            </Button>
+          </Link>
+        </div>
       </div>
     </motion.header>
   );
