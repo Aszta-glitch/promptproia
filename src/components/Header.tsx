@@ -1,7 +1,16 @@
 import { motion } from 'framer-motion';
-import { LogIn } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { LogIn, User, LogOut, LayoutDashboard, Shield } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -9,6 +18,15 @@ interface HeaderProps {
 }
 
 export const Header = ({ showBackButton, onBack }: HeaderProps) => {
+  const { user, role, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success('Logout realizado');
+    navigate('/login');
+  };
+
   return (
     <motion.header
       initial={{ opacity: 0, y: -20 }}
@@ -28,12 +46,40 @@ export const Header = ({ showBackButton, onBack }: HeaderProps) => {
             </button>
           )}
           
-          <Link to="/login">
-            <Button variant="outline" size="sm" className="gap-2">
-              <LogIn className="h-4 w-4" />
-              Entrar
-            </Button>
-          </Link>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <User className="h-4 w-4" />
+                  <span className="max-w-[150px] truncate">{user.email}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Dashboard
+                </DropdownMenuItem>
+                {role === 'admin' && (
+                  <DropdownMenuItem onClick={() => navigate('/admin')}>
+                    <Shield className="h-4 w-4 mr-2" />
+                    Administração
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link to="/login">
+              <Button variant="outline" size="sm" className="gap-2">
+                <LogIn className="h-4 w-4" />
+                Entrar
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </motion.header>
