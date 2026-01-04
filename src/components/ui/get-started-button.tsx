@@ -12,7 +12,7 @@ export function GetStartedButton({ children = "Get Started", onClick, className 
   return (
     <Button 
       className={cn(
-        "group relative overflow-hidden gradient-primary glow-primary hover:opacity-90 text-primary-foreground border-0",
+        "group relative overflow-hidden bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 hover:from-blue-600 hover:via-blue-700 hover:to-cyan-600 text-white border-0 shadow-lg shadow-blue-500/30",
         className
       )} 
       size="xl"
