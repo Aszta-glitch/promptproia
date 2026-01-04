@@ -86,6 +86,13 @@ const platforms: PlatformOption[] = [
     icon: Cpu,
     color: 'from-gray-500 to-gray-700',
   },
+  {
+    id: 'other',
+    name: 'Outra IA',
+    description: 'Windsurf, Codeium, Amazon Q, etc.',
+    icon: Bot,
+    color: 'from-purple-500 to-pink-500',
+  },
 ];
 
 export const AIPlatformStep = () => {
