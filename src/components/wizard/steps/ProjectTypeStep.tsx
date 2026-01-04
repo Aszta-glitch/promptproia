@@ -74,7 +74,7 @@ export const ProjectTypeStep = () => {
       title="Que tipo de projeto você quer criar?"
       subtitle="Escolha a categoria que melhor descreve sua ideia"
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="flex flex-col gap-3 max-w-md mx-auto">
         {projectTypes.map((project, index) => (
           <OptionCard
             key={project.type}
@@ -83,7 +83,7 @@ export const ProjectTypeStep = () => {
             icon={project.icon}
             selected={projectType === project.type}
             onClick={() => handleSelect(project.type)}
-            delay={index * 0.05}
+            delay={index * 0.03}
           />
         ))}
       </div>
