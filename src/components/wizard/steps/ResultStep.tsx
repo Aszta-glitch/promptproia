@@ -1,32 +1,79 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { WizardStep } from '../WizardStep';
 import { useWizardStore } from '@/store/wizardStore';
 import { Button } from '@/components/ui/button';
-import { Copy, Download, Check, Lock, RotateCcw, Image as ImageIcon } from 'lucide-react';
+import { Copy, Download, Check, RotateCcw, Image as ImageIcon, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { platformLabels } from '@/lib/promptGenerator';
+import { usePrompts } from '@/hooks/usePrompts';
+import { useAuth } from '@/hooks/useAuth';
 
 export const ResultStep = () => {
-  const { generatedPrompt, referenceImages, aiPlatform, reset } = useWizardStore();
+  const { generatedPrompt, referenceImages, aiPlatform, projectType, objective, targetAudience, complexity, visualStyle, contextAnswers, reset } = useWizardStore();
   const [copied, setCopied] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const { createPrompt } = usePrompts();
+  const { user } = useAuth();
 
-  const handleCopy = () => {
-    // Show paywall for copy action
-    setShowPaywall(true);
+  const handleSavePrompt = async () => {
+    if (!user) {
+      toast.error('Você precisa estar logado para salvar prompts');
+      return;
+    }
+
+    // Generate a title based on project type and objective
+    const projectTypeLabels: Record<string, string> = {
+      'crud': 'Sistema CRUD',
+      'dashboard': 'Dashboard',
+      'saas': 'SaaS',
+      'landing': 'Landing Page',
+      'tool': 'Ferramenta',
+      'mobile': 'App Mobile',
+      'ecommerce': 'E-commerce',
+      'portfolio': 'Portfólio',
+      'chatbot': 'Chatbot',
+    };
+
+    const title = objective 
+      ? objective.substring(0, 50) + (objective.length > 50 ? '...' : '')
+      : projectType 
+        ? projectTypeLabels[projectType] || projectType
+        : 'Prompt sem título';
+
+    await createPrompt.mutateAsync({
+      title,
+      project_type: projectType,
+      objective,
+      audience: targetAudience,
+      complexity,
+      visual_style: visualStyle,
+      ai_platform: aiPlatform,
+      context_answers: contextAnswers,
+      generated_prompt: generatedPrompt,
+    });
+
+    setSaved(true);
   };
 
   const handleExport = () => {
-    // Show paywall for export action
-    setShowPaywall(true);
+    if (generatedPrompt) {
+      const blob = new Blob([generatedPrompt], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'prompt.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('Prompt exportado!');
+    }
   };
 
   const handleNewPrompt = () => {
     reset();
   };
 
-  const handleFreeCopy = () => {
+  const handleCopy = () => {
     if (generatedPrompt) {
       navigator.clipboard.writeText(generatedPrompt);
       setCopied(true);
@@ -34,59 +81,6 @@ export const ResultStep = () => {
       setTimeout(() => setCopied(false), 2000);
     }
   };
-
-  if (showPaywall) {
-    return (
-      <WizardStep
-        stepKey="paywall"
-        title="Desbloqueie o acesso completo"
-        subtitle="Crie uma conta gratuita para copiar e salvar seus prompts"
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="space-y-6"
-        >
-          <div className="gradient-border p-8 rounded-3xl text-center">
-            <div className="w-16 h-16 mx-auto mb-6 rounded-2xl gradient-primary flex items-center justify-center">
-              <Lock className="w-8 h-8 text-primary-foreground" />
-            </div>
-            
-            <h3 className="text-xl font-semibold mb-2">Conta Gratuita</h3>
-            <p className="text-muted-foreground mb-6">
-              Com uma conta gratuita você pode:
-            </p>
-            
-            <ul className="text-left space-y-3 mb-8">
-              {[
-                'Copiar e exportar prompts',
-                'Salvar até 5 prompts no histórico',
-                'Acessar templates exclusivos',
-              ].map((feature, i) => (
-                <li key={i} className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full gradient-primary flex items-center justify-center">
-                    <Check className="w-3 h-3 text-primary-foreground" />
-                  </div>
-                  <span className="text-sm">{feature}</span>
-                </li>
-              ))}
-            </ul>
-
-            <Button variant="gradient" size="xl" className="w-full mb-4">
-              Criar conta grátis
-            </Button>
-            
-            <button
-              onClick={() => setShowPaywall(false)}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Voltar ao prompt
-            </button>
-          </div>
-        </motion.div>
-      </WizardStep>
-    );
-  }
 
   const platformName = aiPlatform ? platformLabels[aiPlatform] : 'IA';
 
@@ -140,7 +134,7 @@ export const ResultStep = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleFreeCopy}
+                onClick={handleCopy}
                 className="text-muted-foreground hover:text-foreground"
               >
                 {copied ? (
@@ -164,7 +158,7 @@ export const ResultStep = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="grid grid-cols-2 gap-4"
+          className="grid grid-cols-3 gap-4"
         >
           <Button
             variant="gradient-outline"
@@ -175,12 +169,30 @@ export const ResultStep = () => {
             Exportar
           </Button>
           <Button
+            variant="gradient-outline"
+            size="lg"
+            onClick={handleSavePrompt}
+            disabled={saved || createPrompt.isPending}
+          >
+            {saved ? (
+              <>
+                <Check className="w-4 h-4 mr-2" />
+                Salvo
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Salvar
+              </>
+            )}
+          </Button>
+          <Button
             variant="gradient"
             size="lg"
             onClick={handleNewPrompt}
           >
             <RotateCcw className="w-4 h-4 mr-2" />
-            Novo Prompt
+            Novo
           </Button>
         </motion.div>
 
