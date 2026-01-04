@@ -31,7 +31,8 @@ export const VisualStyleStep = () => {
     visualStyle, 
     setVisualStyle, 
     projectType, 
-    objective, 
+    objective,
+    contextAnswers,
     targetAudience, 
     complexity,
     setGeneratedPrompt,
@@ -47,6 +48,7 @@ export const VisualStyleStep = () => {
       const prompt = generatePrompt(
         projectType,
         objective,
+        contextAnswers,
         targetAudience,
         complexity,
         style

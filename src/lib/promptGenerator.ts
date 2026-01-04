@@ -124,12 +124,38 @@ const getVisualInstructions = (style: VisualStyle): string => {
 export const generatePrompt = (
   projectType: ProjectType,
   objective: string,
+  contextAnswers: Record<string, string>,
   targetAudience: string,
   complexity: ComplexityLevel,
   visualStyle: VisualStyle
 ): string => {
   const features = getProjectFeatures(projectType, complexity);
   const visualInstructions = getVisualInstructions(visualStyle);
+
+  // Formata as respostas contextuais
+  const contextDetails = Object.entries(contextAnswers)
+    .filter(([, value]) => value?.trim())
+    .map(([key, value]) => {
+      const labels: Record<string, string> = {
+        dataFields: 'Dados a cadastrar',
+        productInfo: 'Informações de produtos',
+        scheduling: 'Sistema de agendamento',
+        metrics: 'Métricas importantes',
+        userJourney: 'Jornada do usuário',
+        payment: 'Modelo de pagamento',
+        content: 'Tipos de conteúdo',
+        notifications: 'Notificações',
+        integrations: 'Integrações',
+        processing: 'Fluxo de processamento',
+        coreFeature: 'Funcionalidade central',
+        conversion: 'Ação principal',
+        dataSource: 'Fonte de dados',
+        mainFeatures: 'Funcionalidades principais',
+        differentiator: 'Diferencial',
+      };
+      return `- **${labels[key] || key}:** ${value}`;
+    })
+    .join('\n');
 
   const prompt = `# Prompt Otimizado para Lovable
 
@@ -140,6 +166,9 @@ export const generatePrompt = (
 **Público-Alvo:** ${targetAudience}
 **Nível de Complexidade:** ${complexityLabels[complexity]}
 **Estilo Visual:** ${visualStyleLabels[visualStyle]}
+
+${contextDetails ? `### Detalhes Específicos:
+${contextDetails}` : ''}
 
 ---
 
