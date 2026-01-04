@@ -11,10 +11,10 @@ export const Hero = ({ onStart }: HeroProps) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
       {/* 3D Dotted Surface Background */}
-      <DottedSurface className="opacity-40" />
+      <DottedSurface className="!opacity-50" />
       
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-radial-gradient" />
+      {/* Background gradient overlay */}
+      <div className="absolute inset-0 bg-radial-gradient pointer-events-none" style={{ zIndex: 1 }} />
       
       {/* Floating orbs */}
       <motion.div
