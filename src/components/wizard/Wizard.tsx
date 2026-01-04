@@ -2,16 +2,18 @@ import { useWizardStore } from '@/store/wizardStore';
 import { ProgressBar } from './ProgressBar';
 import { ProjectTypeStep } from './steps/ProjectTypeStep';
 import { ObjectiveStep } from './steps/ObjectiveStep';
+import { ContextQuestionsStep } from './steps/ContextQuestionsStep';
 import { AudienceStep } from './steps/AudienceStep';
 import { ComplexityStep } from './steps/ComplexityStep';
 import { VisualStyleStep } from './steps/VisualStyleStep';
 import { ResultStep } from './steps/ResultStep';
 
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 7;
 
 const steps = [
   ProjectTypeStep,
   ObjectiveStep,
+  ContextQuestionsStep,
   AudienceStep,
   ComplexityStep,
   VisualStyleStep,

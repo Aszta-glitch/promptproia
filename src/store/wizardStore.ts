@@ -8,6 +8,7 @@ export interface WizardState {
   currentStep: number;
   projectType: ProjectType | null;
   objective: string;
+  contextAnswers: Record<string, string>;
   targetAudience: string;
   complexity: ComplexityLevel | null;
   visualStyle: VisualStyle | null;
@@ -17,6 +18,7 @@ export interface WizardState {
   setStep: (step: number) => void;
   setProjectType: (type: ProjectType) => void;
   setObjective: (objective: string) => void;
+  setContextAnswers: (answers: Record<string, string>) => void;
   setTargetAudience: (audience: string) => void;
   setComplexity: (level: ComplexityLevel) => void;
   setVisualStyle: (style: VisualStyle) => void;
@@ -30,6 +32,7 @@ const initialState = {
   currentStep: 0,
   projectType: null,
   objective: '',
+  contextAnswers: {},
   targetAudience: '',
   complexity: null,
   visualStyle: null,
@@ -42,6 +45,7 @@ export const useWizardStore = create<WizardState>((set) => ({
   setStep: (step) => set({ currentStep: step }),
   setProjectType: (type) => set({ projectType: type }),
   setObjective: (objective) => set({ objective }),
+  setContextAnswers: (answers) => set({ contextAnswers: answers }),
   setTargetAudience: (audience) => set({ targetAudience: audience }),
   setComplexity: (level) => set({ complexity: level }),
   setVisualStyle: (style) => set({ visualStyle: style }),
