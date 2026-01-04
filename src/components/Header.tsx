@@ -21,7 +21,6 @@ export const Header = ({ showBackButton, onBack }: HeaderProps) => {
           <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center glow-primary">
             <Sparkles className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="font-semibold text-lg hidden sm:block">Prompt Pro</span>
         </button>
 
         {showBackButton && (
