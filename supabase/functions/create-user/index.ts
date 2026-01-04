@@ -22,34 +22,67 @@ serve(async (req) => {
       },
     });
 
-    // Verify the requesting user is an admin
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-    
-    const { data: { user: requestingUser }, error: userError } = await supabaseAdmin.auth.getUser(token);
-    
-    if (userError || !requestingUser) {
-      return new Response(
-        JSON.stringify({ error: "Não autorizado" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const { email, password, role, isBootstrap } = await req.json();
+
+    // Check if this is a bootstrap request (creating first admin)
+    if (isBootstrap) {
+      // Check if there are any admins
+      const { data: existingAdmins, error: adminCheckError } = await supabaseAdmin
+        .from("user_roles")
+        .select("id")
+        .eq("role", "admin");
+
+      if (adminCheckError) {
+        console.error("Error checking for admins:", adminCheckError);
+        return new Response(
+          JSON.stringify({ error: "Erro ao verificar admins" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      if (existingAdmins && existingAdmins.length > 0) {
+        return new Response(
+          JSON.stringify({ error: "Já existe um admin. Use o login para acessar." }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      console.log("Bootstrap mode: Creating first admin user");
+    } else {
+      // Normal flow: Verify the requesting user is an admin
+      const authHeader = req.headers.get("Authorization");
+      if (!authHeader) {
+        return new Response(
+          JSON.stringify({ error: "Não autorizado" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      const token = authHeader.replace("Bearer ", "");
+      
+      const { data: { user: requestingUser }, error: userError } = await supabaseAdmin.auth.getUser(token);
+      
+      if (userError || !requestingUser) {
+        return new Response(
+          JSON.stringify({ error: "Não autorizado" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Check if requesting user is admin
+      const { data: roleData, error: roleError } = await supabaseAdmin
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", requestingUser.id)
+        .single();
+
+      if (roleError || roleData?.role !== "admin") {
+        return new Response(
+          JSON.stringify({ error: "Acesso negado. Apenas administradores podem criar usuários." }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
     }
-
-    // Check if requesting user is admin
-    const { data: roleData, error: roleError } = await supabaseAdmin
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", requestingUser.id)
-      .single();
-
-    if (roleError || roleData?.role !== "admin") {
-      return new Response(
-        JSON.stringify({ error: "Acesso negado. Apenas administradores podem criar usuários." }),
-        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const { email, password, role } = await req.json();
 
     if (!email || !password) {
       return new Response(
