@@ -18,15 +18,18 @@ import {
   LayoutDashboard, 
   Settings, 
   User, 
-  Menu
+  Menu,
+  Users
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { NavLink, useLocation, Routes, Route } from 'react-router-dom';
 import DashboardHome from './dashboard/DashboardHome';
 import SettingsPage from './dashboard/Settings';
+import FindLeads from './dashboard/FindLeads';
 
 const menuItems = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
+  { title: 'Encontrar Clientes', url: '/dashboard/leads', icon: Users },
   { title: 'Configurações', url: '/dashboard/settings', icon: Settings },
 ];
 
@@ -109,6 +112,7 @@ export default function Dashboard() {
           {/* Content */}
           <Routes>
             <Route index element={<DashboardHome />} />
+            <Route path="leads" element={<FindLeads />} />
             <Route path="settings" element={<SettingsPage />} />
           </Routes>
         </main>
