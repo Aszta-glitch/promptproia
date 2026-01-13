@@ -19,14 +19,15 @@ import {
 } from 'lucide-react';
 
 interface Lead {
-  nome: string;
-  segmento: string;
-  localizacao: string;
-  telefone?: string;
-  email?: string;
-  site?: string;
+  name: string;
+  segment: string;
+  location: string;
+  phone?: string;
+  whatsapp?: string;
+  website?: string;
   instagram?: string;
-  observacao_comercial?: string;
+  googleMaps?: string;
+  commercialObservation: string;
 }
 
 const nicheOptions = [
@@ -215,57 +216,73 @@ export default function Leads() {
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg flex items-center gap-2">
                       <Building2 className="h-4 w-4 text-primary" />
-                      {lead.nome}
+                      {lead.name}
                     </CardTitle>
-                    <p className="text-sm text-muted-foreground">{lead.segmento}</p>
+                    <p className="text-sm text-muted-foreground">{lead.segment}</p>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <MapPin className="h-4 w-4" />
-                      {lead.localizacao}
+                      {lead.location}
                     </div>
 
-                    {lead.telefone && (
+                    {lead.phone && (
                       <div className="flex items-center gap-2 text-sm">
                         <Phone className="h-4 w-4 text-muted-foreground" />
                         <a 
-                          href={`tel:${lead.telefone}`}
+                          href={`tel:${lead.phone}`}
                           className="text-primary hover:underline"
                         >
-                          {lead.telefone}
+                          {lead.phone}
                         </a>
                       </div>
                     )}
 
-                    {lead.email && (
+                    {lead.whatsapp && (
                       <div className="flex items-center gap-2 text-sm">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        <Phone className="h-4 w-4 text-green-500" />
                         <a 
-                          href={`mailto:${lead.email}`}
-                          className="text-primary hover:underline truncate"
+                          href={`https://wa.me/${lead.whatsapp.replace(/\D/g, '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green-500 hover:underline"
                         >
-                          {lead.email}
+                          WhatsApp
                         </a>
                       </div>
                     )}
 
-                    {lead.site && (
+                    {lead.website && (
                       <div className="flex items-center gap-2 text-sm">
                         <Globe className="h-4 w-4 text-muted-foreground" />
                         <a 
-                          href={lead.site.startsWith('http') ? lead.site : `https://${lead.site}`}
+                          href={lead.website.startsWith('http') ? lead.website : `https://${lead.website}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-primary hover:underline truncate"
                         >
-                          {lead.site}
+                          {lead.website}
                         </a>
                       </div>
                     )}
 
-                    {lead.observacao_comercial && (
-                      <div className={`mt-3 p-2 rounded-lg border text-xs ${getObservationColor(lead.observacao_comercial)}`}>
-                        💡 {lead.observacao_comercial}
+                    {lead.instagram && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-muted-foreground">📷</span>
+                        <a 
+                          href={`https://instagram.com/${lead.instagram.replace('@', '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline"
+                        >
+                          {lead.instagram}
+                        </a>
+                      </div>
+                    )}
+
+                    {lead.commercialObservation && (
+                      <div className={`mt-3 p-2 rounded-lg border text-xs ${getObservationColor(lead.commercialObservation)}`}>
+                        💡 {lead.commercialObservation}
                       </div>
                     )}
                   </CardContent>
