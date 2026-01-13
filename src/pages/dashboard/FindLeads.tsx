@@ -39,19 +39,12 @@ const nicheSuggestions = [
   'Agências de Viagem',
 ];
 
-const businessTypeOptions = [
-  { value: 'micro', label: 'Microempresa' },
-  { value: 'pequeno', label: 'Pequeno porte' },
-  { value: 'medio', label: 'Médio porte' },
-  { value: 'local', label: 'Negócio local' },
-];
 
 export default function FindLeads() {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('Brasil');
   const [niche, setNiche] = useState('');
-  const [businessType, setBusinessType] = useState('pequeno');
   const [isLoading, setIsLoading] = useState(false);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -76,7 +69,6 @@ export default function FindLeads() {
           state: state.trim() || undefined,
           country: country.trim() || 'Brasil',
           niche: niche.trim(),
-          businessType: businessTypeOptions.find(b => b.value === businessType)?.label || businessType,
         },
       });
 
@@ -165,21 +157,6 @@ export default function FindLeads() {
                 onChange={(e) => setCountry(e.target.value)}
                 className="bg-background/50"
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="businessType">Tipo de Negócio</Label>
-              <Select value={businessType} onValueChange={setBusinessType}>
-                <SelectTrigger className="bg-background/50">
-                  <SelectValue placeholder="Selecione..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {businessTypeOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </div>
 

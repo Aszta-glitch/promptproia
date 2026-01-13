@@ -8,7 +8,6 @@ interface LeadSearchParams {
   state?: string;
   country?: string;
   niche: string;
-  businessType?: string;
 }
 
 interface Lead {
@@ -29,7 +28,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { city, state, country, niche, businessType } = await req.json() as LeadSearchParams;
+    const { city, state, country, niche } = await req.json() as LeadSearchParams;
 
     if (!city || !niche) {
       return new Response(
@@ -43,9 +42,7 @@ Deno.serve(async (req) => {
     if (country) locationParts.push(country);
     const fullLocation = locationParts.join(', ');
 
-    const businessTypeDesc = businessType || 'pequeno a médio porte';
-
-    const systemPrompt = `Você é um especialista em prospecção de leads B2B e pesquisa de mercado. 
+    const systemPrompt = `Você é um especialista em prospecção de leads B2B e pesquisa de mercado.
 Sua tarefa é gerar uma lista realista de empresas/estabelecimentos que existiriam em uma determinada região e nicho.
 
 IMPORTANTE: Gere informações que pareçam reais e úteis para prospecção comercial. 
@@ -70,7 +67,7 @@ Retorne EXATAMENTE um JSON válido no seguinte formato, sem texto adicional:
 
     const userPrompt = `Gere uma lista de 8 a 12 empresas/estabelecimentos do nicho "${niche}" localizadas em "${fullLocation}".
 
-Tipo de negócio: ${businessTypeDesc}
+Inclua empresas de TODOS os portes: microempresas, pequeno porte, médio porte e grande porte.
 
 Para cada empresa, forneça:
 - Nome realista e criativo
@@ -99,7 +96,7 @@ Retorne APENAS o JSON, sem explicações.`;
       );
     }
 
-    console.log('Generating leads for:', { fullLocation, niche, businessType });
+    console.log('Generating leads for:', { fullLocation, niche });
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -176,7 +173,7 @@ Retorne APENAS o JSON, sem explicações.`;
       JSON.stringify({ 
         success: true, 
         leads,
-        searchParams: { city, state, country, niche, businessType }
+        searchParams: { city, state, country, niche }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
