@@ -19,10 +19,11 @@ import {
   Settings, 
   User, 
   Menu,
-  Users
+  Users,
+  Home
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { NavLink, useLocation, Routes, Route } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate, Routes, Route } from 'react-router-dom';
 import DashboardHome from './dashboard/DashboardHome';
 import SettingsPage from './dashboard/Settings';
 import FindLeads from './dashboard/FindLeads';
@@ -84,7 +85,13 @@ function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <div className="mt-auto p-4 border-t border-border/50">
+      <div className="mt-auto p-4 border-t border-border/50 space-y-2">
+        <Button variant="outline" className="w-full justify-start" asChild>
+          <NavLink to="/">
+            <Home className="h-4 w-4 mr-2" />
+            Página Inicial
+          </NavLink>
+        </Button>
         <Button variant="outline" className="w-full justify-start" onClick={handleSignOut}>
           <LogOut className="h-4 w-4 mr-2" />
           Sair
