@@ -91,7 +91,7 @@ export const Hero = ({ onStart }: HeroProps) => {
             Criar meu prompt
           </GetStartedButton>
           <Button
-            onClick={() => navigate('/dashboard/leads')}
+            onClick={() => navigate('/leads')}
             variant="outline"
             size="lg"
             className="gap-2 px-8 py-6 text-lg rounded-xl border-primary/30 hover:bg-primary/10 hover:border-primary/50 transition-all"
