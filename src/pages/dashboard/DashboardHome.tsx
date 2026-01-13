@@ -124,7 +124,7 @@ export default function DashboardHome() {
           <Button 
             size="lg" 
             className="w-full h-16 text-lg gap-3 gradient-primary hover:opacity-90 shadow-lg rounded-2xl"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/?create=true')}
           >
             <Sparkles className="h-6 w-6" />
             Criar Novo Prompt
@@ -183,7 +183,7 @@ export default function DashboardHome() {
                   <Sparkles className="h-8 w-8 text-primary-foreground" />
                 </div>
                 <p className="text-muted-foreground mb-4">Você ainda não criou nenhum prompt</p>
-                <Button variant="link" onClick={() => navigate('/')} className="text-primary">
+                <Button variant="link" onClick={() => navigate('/?create=true')} className="text-primary">
                   Criar seu primeiro prompt
                 </Button>
               </div>

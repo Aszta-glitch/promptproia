@@ -1,13 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import { Hero } from '@/components/landing/Hero';
 import { Wizard } from '@/components/wizard/Wizard';
 import { Header } from '@/components/Header';
 import { useWizardStore } from '@/store/wizardStore';
 
 const Index = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showWizard, setShowWizard] = useState(false);
   const { reset } = useWizardStore();
+
+  // Check URL param on mount to start wizard directly
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      reset();
+      setShowWizard(true);
+      // Clean up the URL param
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, reset, setSearchParams]);
 
   const handleStart = () => {
     reset();
