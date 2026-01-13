@@ -1,13 +1,17 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Zap, Target, Shield } from 'lucide-react';
+import { Sparkles, Zap, Target, Shield, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { DottedSurface } from '@/components/ui/dotted-surface';
 import { GetStartedButton } from '@/components/ui/get-started-button';
+import { Button } from '@/components/ui/button';
 
 interface HeroProps {
   onStart: () => void;
 }
 
 export const Hero = ({ onStart }: HeroProps) => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
       {/* 3D Dotted Surface Background */}
@@ -76,16 +80,25 @@ export const Hero = ({ onStart }: HeroProps) => {
           Em menos de 3 minutos, resultados profissionais.
         </motion.p>
 
-        {/* CTA Button */}
+        {/* CTA Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="mb-16"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
         >
           <GetStartedButton onClick={onStart}>
             Criar meu prompt
           </GetStartedButton>
+          <Button
+            onClick={() => navigate('/dashboard/leads')}
+            variant="outline"
+            size="lg"
+            className="gap-2 px-8 py-6 text-lg rounded-xl border-primary/30 hover:bg-primary/10 hover:border-primary/50 transition-all"
+          >
+            <Users className="w-5 h-5" />
+            Encontrar Clientes
+          </Button>
         </motion.div>
 
         {/* Features */}
