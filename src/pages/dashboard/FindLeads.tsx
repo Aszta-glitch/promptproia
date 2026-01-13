@@ -21,22 +21,22 @@ interface Lead {
   commercialObservation: string;
 }
 
-const nicheOptions = [
-  { value: 'restaurantes', label: 'Restaurantes e Bares' },
-  { value: 'clinicas-medicas', label: 'Clínicas Médicas' },
-  { value: 'clinicas-odontologicas', label: 'Clínicas Odontológicas' },
-  { value: 'academias', label: 'Academias e Fitness' },
-  { value: 'saloes-beleza', label: 'Salões de Beleza' },
-  { value: 'imobiliarias', label: 'Imobiliárias' },
-  { value: 'lojas-roupas', label: 'Lojas de Roupas' },
-  { value: 'pet-shops', label: 'Pet Shops' },
-  { value: 'escritorios-advocacia', label: 'Escritórios de Advocacia' },
-  { value: 'contabilidade', label: 'Escritórios de Contabilidade' },
-  { value: 'oficinas-mecanicas', label: 'Oficinas Mecânicas' },
-  { value: 'escolas-cursos', label: 'Escolas e Cursos' },
-  { value: 'hoteis-pousadas', label: 'Hotéis e Pousadas' },
-  { value: 'construtoras', label: 'Construtoras' },
-  { value: 'agencias-viagem', label: 'Agências de Viagem' },
+const nicheSuggestions = [
+  'Restaurantes e Bares',
+  'Clínicas Médicas',
+  'Clínicas Odontológicas',
+  'Academias e Fitness',
+  'Salões de Beleza',
+  'Imobiliárias',
+  'Lojas de Roupas',
+  'Pet Shops',
+  'Escritórios de Advocacia',
+  'Escritórios de Contabilidade',
+  'Oficinas Mecânicas',
+  'Escolas e Cursos',
+  'Hotéis e Pousadas',
+  'Construtoras',
+  'Agências de Viagem',
 ];
 
 const businessTypeOptions = [
@@ -61,8 +61,8 @@ export default function FindLeads() {
       toast.error('Por favor, informe a cidade');
       return;
     }
-    if (!niche) {
-      toast.error('Por favor, selecione um nicho');
+    if (!niche.trim()) {
+      toast.error('Por favor, informe um nicho');
       return;
     }
 
@@ -75,7 +75,7 @@ export default function FindLeads() {
           city: city.trim(),
           state: state.trim() || undefined,
           country: country.trim() || 'Brasil',
-          niche: nicheOptions.find(n => n.value === niche)?.label || niche,
+          niche: niche.trim(),
           businessType: businessTypeOptions.find(b => b.value === businessType)?.label || businessType,
         },
       });
@@ -185,18 +185,19 @@ export default function FindLeads() {
 
           <div className="space-y-2">
             <Label htmlFor="niche">Nicho *</Label>
-            <Select value={niche} onValueChange={setNiche}>
-              <SelectTrigger className="bg-background/50">
-                <SelectValue placeholder="Selecione o nicho de negócio..." />
-              </SelectTrigger>
-              <SelectContent>
-                {nicheOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Input
+              id="niche"
+              placeholder="Ex: Restaurantes, Clínicas, Academias..."
+              value={niche}
+              onChange={(e) => setNiche(e.target.value)}
+              className="bg-background/50"
+              list="niche-suggestions"
+            />
+            <datalist id="niche-suggestions">
+              {nicheSuggestions.map((suggestion) => (
+                <option key={suggestion} value={suggestion} />
+              ))}
+            </datalist>
           </div>
 
           <Button 
