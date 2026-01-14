@@ -69,7 +69,7 @@ export const Hero = ({ onStart }: HeroProps) => {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-[1.1] tracking-tight"
         >
-          Crie Prompts<br />
+          Crie Sites<br />
           <span className="text-primary">Profissionais</span><br />
           Com IA em<br />
           Minutos
