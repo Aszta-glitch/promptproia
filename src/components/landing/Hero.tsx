@@ -107,8 +107,8 @@ export const Hero = ({ onStart }: HeroProps) => {
             size="lg"
             className="gap-2 px-6 py-7 text-lg font-medium text-muted-foreground hover:text-foreground hover:bg-transparent transition-all"
           >
-            <Play className="w-5 h-5" />
-            Ver Sistema
+            <Users className="w-5 h-5" />
+            Buscar Clientes
           </Button>
         </motion.div>
 
