@@ -65,8 +65,7 @@ export const Hero = ({ onStart }: HeroProps) => {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
         >
-          IA Prompt{' '}
-          <span className="gradient-text">Pro</span>
+          Astra<span className="gradient-text">X</span>
         </motion.h1>
 
         {/* Subtitle */}
