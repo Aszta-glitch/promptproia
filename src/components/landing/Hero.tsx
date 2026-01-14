@@ -98,7 +98,7 @@ export const Hero = ({ onStart }: HeroProps) => {
             size="lg"
             className="gap-2 px-8 py-7 text-lg font-semibold rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_40px_rgba(220,38,38,0.4)] transition-all"
           >
-            ACESSAR PLATAFORMA
+            CRIAR SITE
             <ArrowRight className="w-5 h-5" />
           </Button>
           <Button
