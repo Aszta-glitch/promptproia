@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { LogIn, User, LogOut, LayoutDashboard, Shield } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '@/assets/logo.png';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -35,9 +34,7 @@ export const Header = ({ showBackButton, onBack }: HeaderProps) => {
       className="fixed top-0 left-0 right-0 z-50 px-4 py-4"
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <img src={logo} alt="Logo" className="h-10 w-auto" />
-        </Link>
+        <div /> {/* Spacer */}
 
         <div className="flex items-center gap-4">
           {showBackButton && (
