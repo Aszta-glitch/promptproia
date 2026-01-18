@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
-import { User, Bell, Lock, Palette, Loader2, Check } from 'lucide-react';
+import { useTheme, colorPresets, ColorPresetKey } from '@/hooks/useTheme';
+import { User, Bell, Lock, Palette, Loader2, Check, Sun, Moon } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
@@ -18,6 +19,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 
 const nameSchema = z.string().max(100, 'Nome deve ter no máximo 100 caracteres');
 const passwordSchema = z.string().min(6, 'Senha deve ter no mínimo 6 caracteres');
@@ -25,16 +27,15 @@ const passwordSchema = z.string().min(6, 'Senha deve ter no mínimo 6 caracteres
 export default function Settings() {
   const { user } = useAuth();
   const { profile, isLoading, updateProfile } = useProfile();
+  const { mode, colorPreset, setMode, setColorPreset } = useTheme();
   
   const [name, setName] = useState('');
   const [notificationsEmail, setNotificationsEmail] = useState(true);
   const [notificationsPush, setNotificationsPush] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   
   // Password change
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -45,18 +46,8 @@ export default function Settings() {
       setName(profile.name || '');
       setNotificationsEmail(profile.notifications_email ?? true);
       setNotificationsPush(profile.notifications_push ?? false);
-      setDarkMode(profile.theme === 'dark');
     }
   }, [profile]);
-
-  // Apply theme to document
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
 
   const handleSaveProfile = async () => {
     try {
@@ -72,6 +63,7 @@ export default function Settings() {
     try {
       await updateProfile.mutateAsync({
         name: name.trim() || null,
+        theme: `${mode}:${colorPreset}`,
       });
     } finally {
       setIsSaving(false);
@@ -82,15 +74,43 @@ export default function Settings() {
     if (type === 'email') {
       setNotificationsEmail(value);
       await updateProfile.mutateAsync({ notifications_email: value });
+      toast.success(value ? 'Notificações por email ativadas' : 'Notificações por email desativadas');
     } else {
-      setNotificationsPush(value);
-      await updateProfile.mutateAsync({ notifications_push: value });
+      if (value) {
+        // Request push notification permission
+        if ('Notification' in window) {
+          const permission = await Notification.requestPermission();
+          if (permission === 'granted') {
+            setNotificationsPush(true);
+            await updateProfile.mutateAsync({ notifications_push: true });
+            toast.success('Notificações push ativadas');
+            // Show test notification
+            new Notification('PromptPro IA', {
+              body: 'Notificações push ativadas com sucesso!',
+              icon: '/favicon.ico'
+            });
+          } else {
+            toast.error('Permissão de notificações negada pelo navegador');
+          }
+        } else {
+          toast.error('Seu navegador não suporta notificações push');
+        }
+      } else {
+        setNotificationsPush(false);
+        await updateProfile.mutateAsync({ notifications_push: false });
+        toast.success('Notificações push desativadas');
+      }
     }
   };
 
-  const handleThemeChange = async (isDark: boolean) => {
-    setDarkMode(isDark);
-    await updateProfile.mutateAsync({ theme: isDark ? 'dark' : 'light' });
+  const handleModeChange = (isDark: boolean) => {
+    setMode(isDark ? 'dark' : 'light');
+    toast.success(isDark ? 'Modo escuro ativado' : 'Modo claro ativado');
+  };
+
+  const handleColorPresetChange = (preset: ColorPresetKey) => {
+    setColorPreset(preset);
+    toast.success(`Cor ${colorPresets[preset].name} aplicada`);
   };
 
   const handleChangePassword = async () => {
@@ -122,7 +142,6 @@ export default function Settings() {
 
       toast.success('Senha alterada com sucesso!');
       setShowPasswordDialog(false);
-      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
@@ -235,19 +254,90 @@ export default function Settings() {
               <CardTitle>Aparência</CardTitle>
             </div>
             <CardDescription>
-              Personalize a interface
+              Personalize a interface do sistema
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-sm">Modo escuro</p>
-                <p className="text-xs text-muted-foreground">Ativar tema escuro</p>
+          <CardContent className="space-y-6">
+            {/* Theme Mode Toggle */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Modo de Tema</Label>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => handleModeChange(false)}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all",
+                    mode === 'light' 
+                      ? "border-primary bg-primary/10" 
+                      : "border-border hover:border-muted-foreground"
+                  )}
+                >
+                  <Sun className="h-5 w-5" />
+                  <span className="font-medium">Claro</span>
+                </button>
+                <button
+                  onClick={() => handleModeChange(true)}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all",
+                    mode === 'dark' 
+                      ? "border-primary bg-primary/10" 
+                      : "border-border hover:border-muted-foreground"
+                  )}
+                >
+                  <Moon className="h-5 w-5" />
+                  <span className="font-medium">Escuro</span>
+                </button>
               </div>
-              <Switch 
-                checked={darkMode}
-                onCheckedChange={handleThemeChange}
-              />
+            </div>
+
+            {/* Color Presets */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Cor Principal</Label>
+              <div className="grid grid-cols-4 gap-3">
+                {(Object.keys(colorPresets) as ColorPresetKey[]).map((preset) => {
+                  const colors = colorPresets[preset];
+                  return (
+                    <button
+                      key={preset}
+                      onClick={() => handleColorPresetChange(preset)}
+                      className={cn(
+                        "flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-all",
+                        colorPreset === preset 
+                          ? "border-primary bg-primary/10" 
+                          : "border-border hover:border-muted-foreground"
+                      )}
+                    >
+                      <div 
+                        className="w-8 h-8 rounded-full shadow-md"
+                        style={{ backgroundColor: `hsl(${colors.primary})` }}
+                      />
+                      <span className="text-xs font-medium">{colors.name}</span>
+                      {colorPreset === preset && (
+                        <Check className="h-3 w-3 text-primary" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Preview */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Pré-visualização</Label>
+              <div className="p-4 rounded-lg border bg-card">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                    <span className="text-primary-foreground font-bold">A</span>
+                  </div>
+                  <div>
+                    <p className="font-medium">Exemplo de Usuário</p>
+                    <p className="text-sm text-muted-foreground">usuario@exemplo.com</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm">Botão Primário</Button>
+                  <Button size="sm" variant="outline">Secundário</Button>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
