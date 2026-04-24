@@ -125,6 +125,13 @@ Retorne APENAS o JSON, sem explicações.`;
         );
       }
       
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Créditos de IA esgotados. Adicione créditos no workspace da Lovable Cloud para continuar gerando leads.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       return new Response(
         JSON.stringify({ success: false, error: 'Erro ao gerar leads. Tente novamente.' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
